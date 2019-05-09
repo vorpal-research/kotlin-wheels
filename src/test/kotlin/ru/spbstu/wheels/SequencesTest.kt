@@ -4,7 +4,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class Sequences {
+class SequencesTest {
     @Test
     fun testMemoize() {
 

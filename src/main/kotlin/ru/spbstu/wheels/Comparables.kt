@@ -4,6 +4,7 @@ inline class ComparatorScope<T>(val comparator: Comparator<T>) {
     operator fun T.compareTo(that: T) = comparator.compare(this, that)
 
     fun Iterable<T>.max() = maxWith(comparator)
+    fun Iterable<T>.min() = minWith(comparator)
     fun Collection<T>.sorted() = sortedWith(comparator)
     fun MutableList<T>.sort() = sortWith(comparator)
 }

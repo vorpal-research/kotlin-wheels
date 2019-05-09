@@ -3,15 +3,18 @@ package ru.spbstu.wheels
 import kotlinx.warnings.Warnings
 import kotlin.reflect.KProperty
 
-inline class Option<out T>(val unsafeValue: Any?) {
+inline class Option<out T>
+@Deprecated(replaceWith = ReplaceWith("Option.just(unsafeValue)"), message = "Do not use")
+constructor(val unsafeValue: Any?) {
     companion object {
         private val NOVALUE = Any()
-        private val EMPTY = Option<Any?>(NOVALUE)
+        @Suppress(Warnings.DEPRECATION)
+        private val EMPTY = Option<Nothing>(NOVALUE)
 
-        @Suppress(Warnings.NOTHING_TO_INLINE)
+        @Suppress(Warnings.NOTHING_TO_INLINE, Warnings.DEPRECATION)
         inline fun <T> just(value: T) = Option<T>(value)
-        @Suppress(Warnings.UNCHECKED_CAST)
-        fun <T> empty() = EMPTY as Option<T>
+
+        fun <T> empty(): Option<T> = EMPTY
 
         fun <T> ofNullable(value: T) = value?.let(::just) ?: empty()
     }
@@ -32,6 +35,12 @@ inline class Option<out T>(val unsafeValue: Any?) {
 inline fun <T> Option<T>.getOrElse(body: () -> T): T = when {
     isEmpty() -> body()
     else -> unsafeValue as T
+}
+
+@Suppress(Warnings.UNCHECKED_CAST)
+inline fun <T> Option<T>.orElse(body: () -> Option<T>): Option<T> = when {
+    isEmpty() -> body()
+    else -> this
 }
 
 inline fun <T, U> Option<T>.map(body: (T) -> U): Option<U> = when {
@@ -67,4 +76,4 @@ fun <A, B, C> zip3(a: Option<A>, b: Option<B>, c: Option<C>): Option<Triple<A, B
 
 operator fun <T> Option<T>.getValue(thisRef: Any?, prop: KProperty<*>) = get()
 
-fun <T> Iterator<T>.nextOption() = if(hasNext()) Option.just(next()) else Option.empty()
+fun <T> Iterator<T>.nextOption() = if (hasNext()) Option.just(next()) else Option.empty()

@@ -1,7 +1,7 @@
+@file:Suppress(Warnings.UNUSED_PARAMETER)
 package ru.spbstu.wheels
 
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
+import kotlinx.warnings.Warnings
 import kotlin.math.abs
 
 object PositiveInfinity {
@@ -11,10 +11,14 @@ object NegativeInfinity {
     override fun toString(): String = "-Inf"
 }
 
+@Suppress(Warnings.NOTHING_TO_INLINE)
 inline operator fun PositiveInfinity.unaryMinus() = NegativeInfinity
+@Suppress(Warnings.NOTHING_TO_INLINE)
 inline operator fun NegativeInfinity.unaryMinus() = PositiveInfinity
 
+@Suppress(Warnings.NOTHING_TO_INLINE)
 inline operator fun PositiveInfinity.unaryPlus() = PositiveInfinity
+@Suppress(Warnings.NOTHING_TO_INLINE)
 inline operator fun NegativeInfinity.unaryPlus() = NegativeInfinity
 
 val Inf = PositiveInfinity
@@ -63,7 +67,7 @@ open class IntOpenProgression(val from: Int, val step: Int = 1): Sequence<Int> {
         step == 1 -> "$from..+Inf"
         step > 0 -> "$from..+Inf step $step"
         step == -1 -> "$from downTo -Inf"
-        step < 0 -> "$from downTo -Inf step $step"
+        step < 0 -> "$from downTo -Inf step ${-step}"
         else -> throw IllegalStateException()
     }
 
@@ -91,9 +95,15 @@ open class LongOpenProgression(val from: Long, val step: Long = 1): Sequence<Lon
         step == 1L -> "$from..+Inf"
         step > 0L -> "$from..+Inf step $step"
         step == -1L -> "$from downTo -Inf"
-        step < 0L -> "$from downTo -Inf step $step"
+        step < 0L -> "$from downTo -Inf step ${-step}"
         else -> throw IllegalStateException()
     }
+
+    infix fun step(newStep: Long) = LongOpenProgression(from = from, step = when {
+        step < 0 -> -abs(newStep)
+        step > 0 -> abs(newStep)
+        else -> throw IllegalArgumentException("Zero step is not allowed")
+    })
 }
 
 class InfiniteRangeBefore<T: Comparable<T>>(override val endInclusive: T): OpenRangeBefore<T> {
@@ -109,7 +119,4 @@ class LongInfiniteRangeDownTo(override val endInclusive: Long):
         OpenRangeBefore<Long>, LongOpenProgression(endInclusive, -1)
 class ComparableInfiniteRangeAfter<T: Comparable<T>>(override val start: T): OpenRangeAfter<T> {
     override fun toString(): String = "$start..+Inf"
-}
-class ComparableInfiniteRangeDownTo<T: Comparable<T>>(override val endInclusive: T): OpenRangeBefore<T> {
-    override fun toString(): String = "$endInclusive downTo -Inf"
 }

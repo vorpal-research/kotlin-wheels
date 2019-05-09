@@ -3,7 +3,7 @@ package ru.spbstu.wheels
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class Hash {
+class HashTest {
 
     @Test
     fun setHashCode() {

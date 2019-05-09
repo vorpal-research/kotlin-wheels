@@ -4,9 +4,9 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-private data class Foo(val s: String, val d: Int)
+class ComparablesTest {
+    private data class Foo(val s: String, val d: Int)
 
-class Comparables {
     @Test
     fun comparatorUse() {
         val cmp = compareBy<Foo> { it.s }.thenByDescending { it.d }
@@ -22,6 +22,15 @@ class Comparables {
             val mut = lst.toMutableList()
             mut.sort()
             assertEquals(listOf(Foo("a", 2), Foo("a", 1), Foo("b", 0)), mut)
+
+            assertEquals(
+                    Foo("z", -1),
+                    listOf("z", "b", "z", "b", "c", "x").zip(-1..4, ::Foo).max()
+            )
+            assertEquals(
+                    Foo("b", 2),
+                    listOf("z", "b", "z", "b", "c", "x").zip(-1..4, ::Foo).min()
+            )
         }
     }
 
