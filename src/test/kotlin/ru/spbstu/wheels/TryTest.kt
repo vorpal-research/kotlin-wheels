@@ -1,9 +1,10 @@
 package ru.spbstu.wheels
 
+import kotlinx.warnings.Warnings
 import org.junit.Test
 import kotlin.test.*
 
-@Suppress("CAST_NEVER_SUCCEEDS")
+@Suppress(Warnings.CAST_NEVER_SUCCEEDS, Warnings.UNREACHABLE_CODE, Warnings.USELESS_ELVIS)
 class TryTest {
     @Test
     fun tryEx() {

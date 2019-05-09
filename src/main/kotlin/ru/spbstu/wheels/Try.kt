@@ -44,7 +44,7 @@ inline class Try<out T>(val unsafeValue: Any?) {
 }
 
 @PublishedApi
-internal inline fun Try.Failure.asTry(): Try<Nothing> = Try(this)
+internal fun Try.Failure.asTry(): Try<Nothing> = Try(this)
 
 @Suppress(Warnings.UNCHECKED_CAST)
 inline fun <T> Try<T>.getOrElse(body: () -> T): T = when {
