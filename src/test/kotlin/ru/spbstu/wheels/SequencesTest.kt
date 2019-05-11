@@ -77,8 +77,83 @@ class SequencesTest {
                 ),
                 ((1..3).asSequence() product ('a'..'d')).toList()
         )
+    }
 
+    @Test
+    fun testPeekSome() {
+        val seq = 1..+Inf
+        val (first10, drop10) = seq.peekSome(10)
+        assertEquals((1..10).toList(), first10)
+        val (second20, drop30) = drop10.peekSome(20)
+        assertEquals((11..30).toList(), second20)
+        val third30 = mutableListOf<Int>()
+        val drop60 = drop30.peekSomeTo(30, third30)
+        assertEquals((31..60).toList(), third30)
+        val fourth30 = mutableSetOf<Int>()
+        drop60.peekSomeTo(30, fourth30)
+        assertEquals((61..90).toSet(), fourth30)
+        // empty sequences
+        val (lst, _) = emptySequence<Int>().peekSome(10)
+        assertEquals(listOf(), lst)
+        // too little sequences
+        val mlst = mutableListOf<Int>()
+        (0..5).asSequence().peekSomeTo(10, mlst)
+        assertEquals((0..5).toList(), mlst)
+    }
+
+    @Test
+    fun testPeekFirst() {
+        val seq = 1..+Inf
+        val (first, rest) = seq.peekFirst()
+        assertEquals(1, first)
+
+        assertEquals(listOf(2,3,4), rest.take(3).toList())
+
+        assertFailsWith<NoSuchElementException> {
+            emptySequence<String>().peekFirst()
+        }
+
+        assertEquals(null, emptySequence<String>().peekFirstOrNull().first)
 
     }
 
+    @Test
+    fun testPeekWhile() {
+        // sequences
+        run {
+            val seq = (1..+Inf).constrainOnce()
+            val (first10, drop10) = seq.peekWhile { it <= 10 }
+            assertEquals((1..10).toList(), first10)
+            val (second20, drop30) = drop10.peekWhile { it <= 30 }
+            assertEquals((11..30).toList(), second20)
+            val third30 = mutableListOf<Int>()
+            val drop60 = drop30.peekWhileTo(third30) { it <= 60 }
+            assertEquals((31..60).toList(), third30)
+            val fourth30 = mutableSetOf<Int>()
+            drop60.peekWhileTo(fourth30) { it <= 90 }
+            assertEquals((61..90).toSet(), fourth30)
+            // empty sequences
+            val (lst, _) = emptySequence<Int>().peekWhile { it > 0 }
+            assertEquals(listOf(), lst)
+        }
+
+        // iterators
+        run {
+            val seq = (1..+Inf).iterator()
+            val (first10, drop10) = seq.peekWhile { it <= 10 }
+            assertEquals((1..10).toList(), first10)
+            val (second20, drop30) = drop10.peekWhile { it <= 30 }
+            assertEquals((11..30).toList(), second20)
+            val third30 = mutableListOf<Int>()
+            val drop60 = drop30.peekWhileTo(third30) { it <= 60 }
+            assertEquals((31..60).toList(), third30)
+            val fourth30 = mutableSetOf<Int>()
+            drop60.peekWhileTo(fourth30) { it <= 90 }
+            assertEquals((61..90).toSet(), fourth30)
+            // empty sequences
+            val (lst, _) = emptySequence<Int>().iterator().peekWhile { it > 0 }
+            assertEquals(listOf(), lst)
+        }
+    }
+    
 }

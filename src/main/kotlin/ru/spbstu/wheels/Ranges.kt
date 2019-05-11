@@ -120,3 +120,13 @@ class LongInfiniteRangeDownTo(override val endInclusive: Long):
 class ComparableInfiniteRangeAfter<T: Comparable<T>>(override val start: T): OpenRangeAfter<T> {
     override fun toString(): String = "$start..+Inf"
 }
+
+fun <T> List<T>.slice(range: IntInfiniteRangeAfter) = run {
+    require(range.start >= 0) { "Index range cannot be negative" }
+    subList(range.start, size.coerceAtLeast(range.start).coerceAtLeast(1)).toList()
+}
+
+fun <T> List<T>.slice(range: InfiniteRangeBefore<Int>) = run {
+    require(range.endInclusive >= 0) { "Index range cannot be negative" }
+    subList(0, range.endInclusive + 1).toList()
+}

@@ -1,7 +1,9 @@
 package ru.spbstu.wheels
 
 import org.junit.Test
+import java.lang.IllegalArgumentException
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -72,5 +74,36 @@ class RangesTest {
 
         assertEquals("a..+Inf", ("a"..+Inf).toString())
         assertEquals("-Inf..a", (-Inf.."a").toString())
+    }
+
+    @Test
+    fun sliceTest() {
+        assertEquals((0..40).toList(), (0..40).toList().slice(0..+Inf))
+        assertEquals((4..40).toList(), (0..40).toList().slice(4..+Inf))
+
+        assertEquals((0..40).toList(), (0..40).toList().slice(-Inf..40))
+        assertEquals((0..14).toList(), (0..40).toList().slice(-Inf..14))
+
+        // empty lists
+        assertFailsWith<IndexOutOfBoundsException> {
+            emptyList<Int>().slice(0..+Inf)
+        }
+        assertFailsWith<IndexOutOfBoundsException> {
+            emptyList<Int>().slice(-Inf..0)
+        }
+
+        assertFailsWith<IndexOutOfBoundsException> {
+            listOf(1, 2, 3).slice(4..+Inf)
+        }
+        assertFailsWith<IndexOutOfBoundsException> {
+            listOf(1, 2, 3).slice(-Inf..4)
+        }
+
+        assertFailsWith<IllegalArgumentException> {
+            (0..50).toList().slice(-4..+Inf)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            (0..50).toList().slice(-Inf..-4)
+        }
     }
 }

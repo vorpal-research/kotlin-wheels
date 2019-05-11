@@ -1,13 +1,15 @@
 package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.reflect.KProperty
 
 inline class Option<out T>
 @Deprecated(replaceWith = ReplaceWith("Option.just(unsafeValue)"), message = "Do not use")
 constructor(val unsafeValue: Any?) {
     companion object {
-        private val NOVALUE = Any()
+        internal val NOVALUE = Any()
         @Suppress(Warnings.DEPRECATION)
         private val EMPTY = Option<Nothing>(NOVALUE)
 

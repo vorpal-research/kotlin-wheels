@@ -1,7 +1,6 @@
 package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
-import kotlinx.warnings.Warnings.UNCHECKED_CAST
 import kotlin.reflect.KProperty
 
 inline class Try<out T>(val unsafeValue: Any?) {
@@ -16,26 +15,26 @@ inline class Try<out T>(val unsafeValue: Any?) {
 
     companion object {
         @Suppress(Warnings.NOTHING_TO_INLINE)
-        inline fun <T> just(value: T) = Try<T>(value)
+        inline fun <T> just(value: T): Try<T> = Try<T>(value)
         @Suppress(Warnings.UNCHECKED_CAST)
-        fun exception(exception: Exception) = Try<Nothing>(Failure(exception))
+        fun exception(exception: Exception): Try<Nothing> = Try<Nothing>(Failure(exception))
     }
 
-    fun isException() = unsafeValue is Failure
-    fun isNotException() = unsafeValue !is Failure
+    fun isException(): Boolean = unsafeValue is Failure
+    fun isNotException(): Boolean = unsafeValue !is Failure
 
     fun getOrNull(): T? = getOrElse { null }
     fun getExceptionOrNull(): Exception? = failure?.exception
 
     fun getOrThrow(): T {
         failure?.apply { throw exception }
-        @Suppress(UNCHECKED_CAST)
+        @Suppress(Warnings.UNCHECKED_CAST)
         return unsafeValue as T
     }
 
     inline fun <reified E: Exception> catch(body: (E) -> @UnsafeVariance T): Try<T> = tryWrap {
         val ex = failure?.exception
-        if(ex is E) Try.just(body(ex))
+        if(ex is E) just(body(ex))
         else this
     }
 
