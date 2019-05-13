@@ -32,6 +32,7 @@ class MutableRefTest {
         assertEquals(7, iRef.value)
 
         iRef `=` 0
+        performStuff(sRef, iRef)
         assertEquals("Hello world", sRef.value)
         assertEquals(11, iRef.value)
     }
