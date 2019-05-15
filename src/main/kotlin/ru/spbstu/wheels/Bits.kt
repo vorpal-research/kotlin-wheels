@@ -12,10 +12,10 @@ val IntBits.Companion.One get() = 1.asBits()
 val IntBits.Companion.AllOnes get() = (-1).asBits()
 val SIZE get() = Int.SIZE_BITS
 
+fun IntBits.Companion.fromString(s: String): IntBits = Bits(s.toLong(2).toInt())
+
 inline class IntBits
-@Suppress("NON_PUBLIC_PRIMARY_CONSTRUCTOR_OF_INLINE_CLASS")
-@PublishedApi
-internal constructor(val data: Int) {
+constructor(val data: Int) {
     companion object{}
 
     inline fun asInt() = data
@@ -54,19 +54,18 @@ internal constructor(val data: Int) {
         require(from >= 0)
         require(toExclusive >= from)
         require(toExclusive <= SIZE)
-        val range = (toExclusive - from)
         val mask =
-                when (range) {
+                when (val size = toExclusive - from) {
                     0 -> return Zero
                     SIZE -> return this
-                    else -> ((1 shl (toExclusive - from)) - 1) shl from
+                    else -> (1 shl size - 1) shl from
                 }
         return (this and mask.asBits()) shr from
     }
     inline fun slice(range: IntRange): IntBits = slice(range.start, range.endInclusive + 1)
 
     @Suppress(Warnings.OVERRIDE_BY_INLINE)
-    override inline fun toString(): String = data.toLong().toString(2)
+    override inline fun toString(): String = Integer.toUnsignedString(data, 2)
 }
 
 inline fun Bits(data: Int) = data.asBits()

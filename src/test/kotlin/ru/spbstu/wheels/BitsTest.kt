@@ -5,6 +5,30 @@ import kotlin.test.assertEquals
 
 class BitsTest {
     @Test
+    fun boringOps() {
+        assertEquals(
+                IntBits.fromString("10010100110000000000000000000000"),
+                Bits(0b1100101001).reverse()
+        )
+
+        assertEquals(
+                Bits(0b11001100),
+                Bits(0b10000100) or Bits(0b01001100)
+        )
+
+        assertEquals(
+                Bits(0b01001100),
+                Bits(0b11011100) and Bits(0b1001100)
+        )
+
+
+        assertEquals(
+                IntBits.fromString("0000000111000000000000011001100010"),
+                IntBits.fromString("1111111000111111111111100110011101").inv()
+        )
+    }
+
+    @Test
     fun singleBitOps() {
         assertEquals(
                 0b10000000000.asBits(),

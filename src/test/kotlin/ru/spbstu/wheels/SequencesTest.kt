@@ -190,6 +190,19 @@ class SequencesTest {
                 ).toList()
         )
 
+        // test reentrability
+
+        val seq = intersperse(1..+Inf, 1..+Inf)
+        assertEquals(
+                listOf(1,1,2,2,3,3,4,4,5,5),
+                seq.take(10).toList()
+        )
+
+        assertEquals(
+                listOf(1,1,2,2,3,3,4,4,5,5),
+                seq.take(10).toList()
+        )
+
     }
     
 }

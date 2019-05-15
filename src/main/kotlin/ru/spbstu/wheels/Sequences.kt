@@ -28,43 +28,24 @@ fun <T> Sequence<T>.memoize(): Sequence<T> = when (this) {
 
 fun <T> Sequence<T>.memoizeTo(storage: MutableList<T>): Sequence<T> = MemoizedSequence(this, storage)
 
-internal class ProductSequence<A, B, R>(private val left: () -> Iterator<A>,
-                                        private val right: () -> Iterator<B>,
-                                        private val transform: (A, B) -> R) : Sequence<R> {
-    inner class TheIterator : Iterator<R> {
-        private val currentLeft = left()
-        private var currentRight = right()
-        private var currentLeftValue: Option<A> = Option.empty()
-
-        private fun leftIsEmpty() = currentLeftValue.isEmpty() && !currentLeft.hasNext()
-        private fun rightIsEmpty() = currentLeftValue.isEmpty() && !currentRight.hasNext()
-
-        override fun hasNext(): Boolean =
-                !leftIsEmpty() && !rightIsEmpty() && (currentRight.hasNext() || currentLeft.hasNext())
-
-        override fun next(): R {
-            if (currentLeftValue.isEmpty() || !currentRight.hasNext())
-                currentLeftValue = currentLeft.nextOption()
-
-            if (!currentRight.hasNext()) currentRight = right()
-
-            val lefty = currentLeftValue.get()
-
-            return transform(lefty, currentRight.next())
+private inline fun <A, B, R> product(crossinline left: () -> Iterator<A>,
+                                     crossinline right: () -> Iterator<B>,
+                                     crossinline body: (A, B) -> R): Sequence<R> = sequence {
+    for(a in left()) {
+        for(b in right()) {
+            yield(body(a, b))
         }
     }
-
-    override fun iterator(): Iterator<R> = TheIterator()
 }
 
 fun <A, B, R> Sequence<A>.product(that: Sequence<B>, body: (A, B) -> R): Sequence<R> =
-        ProductSequence({ this.iterator() }, { that.iterator() }, body)
+        product({ this.iterator() }, { that.iterator() }, body)
 
 infix fun <A, B> Sequence<A>.product(that: Sequence<B>): Sequence<Pair<A, B>> =
         product(that, ::Pair)
 
 fun <A, B, R> Sequence<A>.product(that: Iterable<B>, body: (A, B) -> R): Sequence<R> =
-        ProductSequence({ this.iterator() }, { that.iterator() }, body)
+        product({ this.iterator() }, { that.iterator() }, body)
 
 infix fun <A, B> Sequence<A>.product(that: Iterable<B>): Sequence<Pair<A, B>> =
         product(that, ::Pair)
@@ -116,18 +97,11 @@ fun <T> Sequence<T>.peekFirstOrNull(): Pair<T?, Sequence<T>> =
             }
         }
 
-private class PutBackIterator<T>(var first: Option<T>, val iterator: Iterator<T>): Iterator<T> {
-    override fun hasNext(): Boolean = first.isNotEmpty() || iterator.hasNext()
-
-    override fun next(): T = when {
-        first.isNotEmpty() -> first.get().also { first = Option.empty() }
-        else -> iterator.next()
-    }
-}
-
 @PublishedApi
-internal fun <T> Iterator<T>.putBack(value: T): Iterator<T> =
-        PutBackIterator(Option.just(value), this)
+internal fun <T> Iterator<T>.putBack(value: T): Iterator<T> = iterator {
+    yield(value)
+    yieldAll(this@putBack)
+}
 
 inline fun <T> Iterator<T>.peekWhileTo(to: MutableCollection<T>,
                                        predicate: (T) -> Boolean): Iterator<T> {
@@ -155,27 +129,17 @@ inline fun <T> Sequence<T>.peekWhile(predicate: (T) -> Boolean): Pair<List<T>, S
     return list to rest
 }
 
-private class IntersperseSequence<T>(val seqs: Array<out Sequence<T>>): Sequence<T> {
-    init {
-        require(seqs.isNotEmpty())
-    }
-
-    private inner class TheIterator: Iterator<T> {
-        val iters = seqs.map { it.iterator() }
-        var currentIndex = 0
-
-        inline val currentIterator get() = iters[currentIndex]
-
-        override fun hasNext(): Boolean = currentIterator.hasNext()
-        override fun next(): T {
-            val res = currentIterator.next()
-            if(currentIndex < iters.lastIndex) ++currentIndex
-            else currentIndex = 0
-            return res
+fun <T> intersperse(vararg seqs: Sequence<T>): Sequence<T> = run {
+    require(seqs.isNotEmpty())
+    sequence {
+        val iterators = seqs.map { it.iterator() }
+        while (true) {
+            for (it in iterators) {
+                if (it.hasNext()) yield(it.next())
+                else return@sequence
+            }
         }
     }
-    override fun iterator(): Iterator<T> = TheIterator()
 }
 
-fun <T> intersperse(vararg seqs: Sequence<T>): Sequence<T> = IntersperseSequence(seqs)
-fun <T> Collection<Sequence<T>>.intersperse(): Sequence<T> = IntersperseSequence(toTypedArray())
+fun <T> Collection<Sequence<T>>.intersperse(): Sequence<T> = intersperse(*toTypedArray())

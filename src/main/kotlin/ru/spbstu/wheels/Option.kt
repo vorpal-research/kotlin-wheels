@@ -79,3 +79,6 @@ fun <A, B, C> zip3(a: Option<A>, b: Option<B>, c: Option<C>): Option<Triple<A, B
 operator fun <T> Option<T>.getValue(thisRef: Any?, prop: KProperty<*>) = get()
 
 fun <T> Iterator<T>.nextOption() = if (hasNext()) Option.just(next()) else Option.empty()
+
+@Suppress(Warnings.UNCHECKED_CAST)
+operator fun <T> Option<T>.iterator(): Iterator<T> = iterator { if(isNotEmpty()) yield(unsafeValue as T) }
