@@ -3,7 +3,11 @@ package ru.spbstu.wheels
 import kotlinx.warnings.Warnings
 import kotlin.reflect.KProperty
 
-inline class Try<out T>(val unsafeValue: Any?) {
+inline class Try<out T>
+@Deprecated(replaceWith = ReplaceWith("Option.just(unsafeValue)"), message = "Do not use")
+@Suppress("NON_PUBLIC_PRIMARY_CONSTRUCTOR_OF_INLINE_CLASS")
+@PublishedApi
+internal constructor(@PublishedApi internal val unsafeValue: Any?) {
     @PublishedApi
     internal data class Failure(val exception: Exception) {
         override fun toString(): String = "Try.exception($exception)"
@@ -14,9 +18,9 @@ inline class Try<out T>(val unsafeValue: Any?) {
         get() = unsafeValue as? Failure
 
     companion object {
-        @Suppress(Warnings.NOTHING_TO_INLINE)
+        @Suppress(Warnings.NOTHING_TO_INLINE, Warnings.DEPRECATION)
         inline fun <T> just(value: T): Try<T> = Try<T>(value)
-        @Suppress(Warnings.UNCHECKED_CAST)
+        @Suppress(Warnings.UNCHECKED_CAST, Warnings.DEPRECATION)
         fun exception(exception: Exception): Try<Nothing> = Try<Nothing>(Failure(exception))
     }
 
@@ -43,6 +47,7 @@ inline class Try<out T>(val unsafeValue: Any?) {
 }
 
 @PublishedApi
+@Suppress(Warnings.DEPRECATION)
 internal fun Try.Failure.asTry(): Try<Nothing> = Try(this)
 
 @Suppress(Warnings.UNCHECKED_CAST)
