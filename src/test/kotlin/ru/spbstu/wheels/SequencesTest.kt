@@ -155,5 +155,41 @@ class SequencesTest {
             assertEquals(listOf(), lst)
         }
     }
+
+    @Test
+    fun testIntersperse() {
+        assertEquals(
+                listOf(0, 2, 1, 1, 2, 0, 3, -1, 4, -2, 5),
+                intersperse(0..+Inf, (2 downTo -2).asSequence()).toList()
+        )
+
+        assertEquals(
+                listOf(0, 2, 10, 1, 1, 11, 2, 0, 12),
+                intersperse(
+                        (0..2).asSequence(),
+                        (2 downTo -2).asSequence(),
+                        (10..12).asSequence()
+                ).toList()
+        )
+
+        assertFailsWith<IllegalArgumentException> { intersperse<Int>() }
+
+        assertEquals(
+                listOf(),
+                intersperse(
+                        emptySequence(),
+                        0..+Inf
+                ).toList()
+        )
+
+        assertEquals(
+                listOf(0),
+                intersperse(
+                        0..+Inf,
+                        emptySequence()
+                ).toList()
+        )
+
+    }
     
 }

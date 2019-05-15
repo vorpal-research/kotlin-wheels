@@ -154,3 +154,28 @@ inline fun <T> Sequence<T>.peekWhile(predicate: (T) -> Boolean): Pair<List<T>, S
     val rest = peekWhileTo(list, predicate)
     return list to rest
 }
+
+private class IntersperseSequence<T>(val seqs: Array<out Sequence<T>>): Sequence<T> {
+    init {
+        require(seqs.isNotEmpty())
+    }
+
+    private inner class TheIterator: Iterator<T> {
+        val iters = seqs.map { it.iterator() }
+        var currentIndex = 0
+
+        inline val currentIterator get() = iters[currentIndex]
+
+        override fun hasNext(): Boolean = currentIterator.hasNext()
+        override fun next(): T {
+            val res = currentIterator.next()
+            if(currentIndex < iters.lastIndex) ++currentIndex
+            else currentIndex = 0
+            return res
+        }
+    }
+    override fun iterator(): Iterator<T> = TheIterator()
+}
+
+fun <T> intersperse(vararg seqs: Sequence<T>): Sequence<T> = IntersperseSequence(seqs)
+fun <T> Collection<Sequence<T>>.intersperse(): Sequence<T> = IntersperseSequence(toTypedArray())
