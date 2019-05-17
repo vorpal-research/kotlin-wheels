@@ -58,7 +58,7 @@ constructor(val data: Int) {
                 when (val size = toExclusive - from) {
                     0 -> return Zero
                     SIZE -> return this
-                    else -> (1 shl size - 1) shl from
+                    else -> ((1 shl size) - 1) shl from
                 }
         return (this and mask.asBits()) shr from
     }

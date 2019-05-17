@@ -7,7 +7,7 @@ data class SimpleEntry<out K, out V>(override val key: K, override val value: V)
     override fun equals(other: Any?): Boolean =
             other is Map.Entry<*, *> && key == other.key && value == other.value
 
-    override fun hashCode(): Int = hashCode(key) xor hashCode(value)
+    override fun hashCode(): Int = key.hashCode() xor value.hashCode()
 
     override fun toString(): String = "$key=$value"
 }
