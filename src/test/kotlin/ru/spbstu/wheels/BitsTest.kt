@@ -1,7 +1,9 @@
 package ru.spbstu.wheels
 
 import org.junit.Test
+import java.lang.IllegalArgumentException
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class BitsTest {
     @Test
@@ -108,6 +110,47 @@ class BitsTest {
                 0b11.asBits(),
                 bits.slice(5..7)
         )
+    }
+
+    @Test
+    fun words() {
+        val bits = 0x0AABBADD.asBits()
+
+        assertEquals(0xDD.asBits(), bits.wordAt(0))
+        assertEquals(0xBA.asBits(), bits.wordAt(1))
+        assertEquals(0xAB.asBits(), bits.wordAt(2))
+        assertEquals(0x0A.asBits(), bits.wordAt(3))
+
+        assertFailsWith<IllegalArgumentException> { bits.wordAt(4) }
+
+        assertEquals(0xD.asBits(), bits.wordAt(0, 4))
+        assertEquals(0xA.asBits(), bits.wordAt(2, 4))
+        assertEquals(0xB.asBits(), bits.wordAt(4, 4))
+        assertEquals(0xA.asBits(), bits.wordAt(6, 4))
+
+        assertFailsWith<IllegalArgumentException> { bits.wordAt(8, 4) }
+
+        assertEquals(0xADD.asBits(), bits.wordAt(0, 12))
+        assertEquals(0xABB.asBits(), bits.wordAt(1, 12))
+        assertEquals(0x00A.asBits(), bits.wordAt(2, 12))
+
+        assertFailsWith<IllegalArgumentException> { bits.wordAt(3, 12) }
+
+        assertEquals(
+                0x0AFFBADD.asBits(),
+                bits.setWordAt(2, 0xFF.asBits())
+        )
+
+        assertEquals(
+                0x0A000ADD.asBits(),
+                bits.setWordAt(1, 0x0.asBits(), 12)
+        )
+
+        assertEquals(
+                0xFFABBADDL.toInt().asBits(),
+                bits.setWordAt(2, 0xFFFF.asBits(), 12)
+        )
+
     }
 
 }

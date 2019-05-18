@@ -1,7 +1,9 @@
 @file: Suppress(Warnings.NOTHING_TO_INLINE)
+
 package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
+import kotlin.math.ceil
 
 inline fun Int.asBits() = IntBits(this)
 
@@ -16,7 +18,7 @@ fun IntBits.Companion.fromString(s: String): IntBits = Bits(s.toLong(2).toInt())
 
 inline class IntBits
 constructor(val data: Int) {
-    companion object{}
+    companion object {}
 
     inline fun asInt() = data
 
@@ -37,7 +39,7 @@ constructor(val data: Int) {
 
     inline fun forEachOneBit(body: (IntBits) -> Unit) {
         var mask = this
-        while(mask != Zero) {
+        while (mask != Zero) {
             val bit = mask.lowestBitSet
             body(bit)
             mask = mask andNot bit
@@ -62,7 +64,32 @@ constructor(val data: Int) {
                 }
         return (this and mask.asBits()) shr from
     }
+
     inline fun slice(range: IntRange): IntBits = slice(range.start, range.endInclusive + 1)
+    inline fun setSlice(from: Int = 0, toExclusive: Int = SIZE, value: IntBits): IntBits {
+        require(from >= 0)
+        require(toExclusive >= from)
+        require(toExclusive <= SIZE)
+        val ones =
+                when (val size = toExclusive - from) {
+                    0 -> return this
+                    SIZE -> return value
+                    else -> ((1 shl size) - 1).asBits()
+                }
+        val adjustedValue = value and ones
+
+        return this andNot (ones shl from) or (adjustedValue shl from)
+    }
+
+    inline fun wordAt(index: Int, byteSize: Int = Byte.SIZE_BITS) = run {
+        require(index >= 0)
+        require(index < ceil(SIZE.toDouble() / byteSize))
+        slice(byteSize * index, minOf(byteSize * index + byteSize, SIZE))
+    }
+
+    inline fun setWordAt(index: Int, value: IntBits, byteSize: Int = Byte.SIZE_BITS) =
+            setSlice(byteSize * index, minOf(byteSize * index + byteSize, SIZE), value)
+
 
     @Suppress(Warnings.OVERRIDE_BY_INLINE)
     override inline fun toString(): String = Integer.toUnsignedString(data, 2)
