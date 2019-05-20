@@ -10,23 +10,23 @@ class BitsTest {
     fun boringOps() {
         assertEquals(
                 IntBits.fromString("10010100110000000000000000000000"),
-                Bits(0b1100101001).reverse()
+                bits(0b1100101001).reverse()
         )
 
         assertEquals(
-                Bits(0b11001100),
-                Bits(0b10000100) or Bits(0b01001100)
+                bits(0b11001100),
+                bits(0b10000100) or bits(0b01001100)
         )
 
         assertEquals(
-                Bits(0b01001100),
-                Bits(0b11011100) and Bits(0b1001100)
+                bits(0b01001100),
+                bits(0b11011100) and bits(0b1001100)
         )
 
 
         assertEquals(
-                IntBits.fromString("0000000111000000000000011001100010"),
-                IntBits.fromString("1111111000111111111111100110011101").inv()
+                IntBits.fromString("00000111000000000000011001100010"),
+                IntBits.fromString("11111000111111111111100110011101").inv()
         )
     }
 
@@ -45,11 +45,11 @@ class BitsTest {
                 0b11001100000.asBits().lowestBitSet
         )
 
-        Bits(0b11001100000).forEachOneBit { bit ->
+        bits(0b11001100000).forEachOneBit { bit ->
             assertEquals(1, bit.popCount)
         }
 
-        Bits(0).forEachOneBit { throw Exception() }
+        bits(0).forEachOneBit { throw Exception() }
 
         assertEquals(
                 listOf(
@@ -58,8 +58,8 @@ class BitsTest {
                         0b00001000000,
                         0b01000000000,
                         0b10000000000
-                ).map(::Bits),
-                Bits(0b11001100001).oneBitSequence().toList()
+                ).map(::bits),
+                bits(0b11001100001).oneBitSequence().toList()
         )
 
     }
