@@ -26,3 +26,9 @@ fun <T> Iterable<T>.tail(): Iterable<T> = when (this) {
     else -> Iterable { iterator().apply { if (hasNext()) next() } }
 }
 
+inline fun <reified T> Iterable<*>.firstInstanceOfOrNull(): T? {
+    for(e in this) if(e is T) return e
+    return null
+}
+
+fun <T> List<T>.getOrNull(index: Int) = if(index in 0..lastIndex) get(index) else null

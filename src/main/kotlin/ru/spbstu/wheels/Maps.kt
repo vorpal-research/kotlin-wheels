@@ -24,3 +24,17 @@ fun <K, V> Map<K, V>.getOption(key: K): Option<V> = when(key) {
     else -> Option.empty()
 }
 
+fun <K, V, M: MutableMap<K, V>> Iterable<Map.Entry<K, V>>.toMap(m: M): M =
+        m.apply { this@toMap.forEach { put(it.key, it.value) } }
+
+fun <K, V> Iterable<Map.Entry<K, V>>.toMap(): Map<K, V> = when(this) {
+    is Collection -> (this as Collection<Map.Entry<K, V>>).toMap()
+    else -> toMap(mutableMapOf())
+}
+
+fun <K, V> Collection<Map.Entry<K, V>>.toMap(): Map<K, V> = when (size) {
+    0 -> mapOf()
+    1 -> first().let { mapOf(it.key to it.value) }
+    else -> toMap(LinkedHashMap(size))
+}
+

@@ -1,5 +1,7 @@
 package ru.spbstu.wheels
 
+import kotlin.reflect.KClass
+
 internal class MemoizedSequence<T>(
         base: Sequence<T>,
         private val memoizeTo: MutableList<@UnsafeVariance T> = mutableListOf()) : Sequence<T> {
@@ -143,3 +145,18 @@ fun <T> intersperse(vararg seqs: Sequence<T>): Sequence<T> = run {
 }
 
 fun <T> Collection<Sequence<T>>.intersperse(): Sequence<T> = intersperse(*toTypedArray())
+
+inline fun <T, C: MutableCollection<T>> Iterable<Sequence<T>>.transposeTo(crossinline builder: () -> C): Sequence<C> =
+        sequence {
+            val iterators = map { it.iterator() }
+            while(iterators.all { it.hasNext() }) {
+                yield(iterators.mapTo(builder()){ it.next() })
+            }
+        }
+
+fun <T> Iterable<Sequence<T>>.transpose(): Sequence<List<T>> = transposeTo { mutableListOf<T>() }
+
+inline fun <reified T> Sequence<*>.firstInstanceOfOrNull(): T? {
+    for(e in this) if(e is T) return e
+    return null
+}
