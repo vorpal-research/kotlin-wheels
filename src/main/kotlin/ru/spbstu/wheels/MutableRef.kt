@@ -26,6 +26,10 @@ class OutRef<T>(): MutableRef<T> {
         set(value) { option = Option.just(value) }
 
     override fun toString(): String = "OutRef($option)"
+    override fun equals(other: Any?): Boolean =
+            other is OutRef<*> && option == other.option
+            || other is MutableRef<*> && this.option.isNotEmpty() && this.value == other.value
+    override fun hashCode(): Int = option.hashCode()
 }
 
 fun <T> out(): MutableRef<T> = OutRef()
