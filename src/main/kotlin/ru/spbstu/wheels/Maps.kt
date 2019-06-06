@@ -38,3 +38,7 @@ fun <K, V> Collection<Map.Entry<K, V>>.toMap(): Map<K, V> = when (size) {
     else -> toMap(LinkedHashMap(size))
 }
 
+fun <K, V, M: MutableMap<K, V>> Sequence<Map.Entry<K, V>>.toMap(m: M): M =
+        m.apply { this@toMap.forEach { put(it.key, it.value) } }
+
+fun <K, V> Sequence<Map.Entry<K, V>>.toMap(): Map<K, V> = toMap(mutableMapOf())

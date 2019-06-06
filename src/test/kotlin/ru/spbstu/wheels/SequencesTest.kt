@@ -204,5 +204,5 @@ class SequencesTest {
         )
 
     }
-    
+
 }

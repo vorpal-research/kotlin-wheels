@@ -1,7 +1,5 @@
 package ru.spbstu.wheels
 
-import kotlin.reflect.KClass
-
 internal class MemoizedSequence<T>(
         base: Sequence<T>,
         private val memoizeTo: MutableList<@UnsafeVariance T> = mutableListOf()) : Sequence<T> {
@@ -25,10 +23,25 @@ internal class MemoizedSequence<T>(
 
 fun <T> Sequence<T>.memoize(): Sequence<T> = when (this) {
     is MemoizedSequence -> this
-    else -> MemoizedSequence(this)
+    else -> memoizeTo(mutableListOf())
 }
 
-fun <T> Sequence<T>.memoizeTo(storage: MutableList<T>): Sequence<T> = MemoizedSequence(this, storage)
+fun <T> Sequence<T>.memoizeTo(storage: MutableList<T>): Sequence<T> = run {
+    val baseIt = iterator()
+    sequence {
+        var i = 0
+        while (true) {
+            if (i < storage.size) yield(storage[i])
+            else if (baseIt.hasNext()) {
+                val next = baseIt.next()
+                storage += next
+                yield(next)
+            }
+            else break
+            ++i
+        }
+    }
+}
 
 private inline fun <A, B, R> product(crossinline left: () -> Iterator<A>,
                                      crossinline right: () -> Iterator<B>,
@@ -131,10 +144,13 @@ inline fun <T> Sequence<T>.peekWhile(predicate: (T) -> Boolean): Pair<List<T>, S
     return list to rest
 }
 
-fun <T> intersperse(vararg seqs: Sequence<T>): Sequence<T> = run {
-    require(seqs.isNotEmpty())
+fun <T> intersperse(vararg seqs: Sequence<T>): Sequence<T> =
+        seqs.asList().intersperse()
+
+fun <T> Collection<Sequence<T>>.intersperse(): Sequence<T> = run {
+    require(this.isNotEmpty())
     sequence {
-        val iterators = seqs.map { it.iterator() }
+        val iterators = map { it.iterator() }
         while (true) {
             for (it in iterators) {
                 if (it.hasNext()) yield(it.next())
@@ -143,8 +159,6 @@ fun <T> intersperse(vararg seqs: Sequence<T>): Sequence<T> = run {
         }
     }
 }
-
-fun <T> Collection<Sequence<T>>.intersperse(): Sequence<T> = intersperse(*toTypedArray())
 
 inline fun <T, C: MutableCollection<T>> Iterable<Sequence<T>>.transposeTo(crossinline builder: () -> C): Sequence<C> =
         sequence {
@@ -156,7 +170,7 @@ inline fun <T, C: MutableCollection<T>> Iterable<Sequence<T>>.transposeTo(crossi
 
 fun <T> Iterable<Sequence<T>>.transpose(): Sequence<List<T>> = transposeTo { mutableListOf<T>() }
 
-inline fun <reified T> Sequence<*>.firstInstanceOfOrNull(): T? {
+inline fun <reified T> Sequence<*>.firstInstance(): T? {
     for(e in this) if(e is T) return e
     return null
 }

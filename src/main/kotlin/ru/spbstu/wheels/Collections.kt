@@ -26,7 +26,7 @@ fun <T> Iterable<T>.tail(): Iterable<T> = when (this) {
     else -> Iterable { iterator().apply { if (hasNext()) next() } }
 }
 
-inline fun <reified T> Iterable<*>.firstInstanceOfOrNull(): T? {
+inline fun <reified T> Iterable<*>.firstInstance(): T? {
     for(e in this) if(e is T) return e
     return null
 }
