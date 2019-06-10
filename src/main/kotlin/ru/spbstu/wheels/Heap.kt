@@ -9,13 +9,16 @@ interface Heap<T>: Queue<T> {
 fun <T> heap(comparator: Comparator<T>): Heap<T> = BinaryHeap(comparator)
 fun <T: Comparable<T>> heap(): Heap<T> = BinaryHeap()
 
+fun <T> maxHeap(comparator: Comparator<T>): Heap<T> = BinaryHeap(comparator.reversed())
+fun <T: Comparable<T>> maxHeap(): Heap<T> = BinaryHeap(naturalOrder<T>().reversed())
+
 class BinaryHeap<T>(override val comparator: Comparator<T>): Heap<T>, AbstractMutableCollection<T>() {
     companion object {
         const val MIN_SIZE = 16
     }
 
     private var data: Array<Any?> = arrayOfNulls(MIN_SIZE)
-    private val capacity get() = data.size
+    private inline val capacity get() = data.size
     override var size = 0
 
     private fun growTo(size: Int) {

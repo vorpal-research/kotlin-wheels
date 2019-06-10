@@ -14,6 +14,8 @@ operator fun <T> Queue<T>.plusAssign(element: T) = put(element)
 operator fun <T> Queue<T>.plusAssign(iterable: Iterable<T>) = iterable.forEach { put(it) }
 operator fun <T> Queue<T>.plusAssign(sequence: Sequence<T>) = sequence.forEach { put(it) }
 
+fun <T> Queue<T>.isNotEmpty() = !isEmpty()
+
 interface Deque<T> {
     fun putFirst(value: T)
     fun putLast(value :T)
@@ -24,6 +26,8 @@ interface Deque<T> {
     val size: Int
     fun isEmpty(): Boolean = size == 0
 }
+
+fun <T> Deque<T>.isNotEmpty() = !isEmpty()
 
 class ArrayDeque<T>: Deque<T>, Queue<T> {
     companion object {

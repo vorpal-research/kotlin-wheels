@@ -15,10 +15,10 @@ class HeapTest {
             val data = (0..500).toMutableList()
             data.shuffle(random)
 
-            val heap: Heap<Int> = BinaryHeap()
+            val heap: Heap<Int> = heap()
             heap += data
 
-            val heapSorted = generateSequence { if(heap.isEmpty()) null else heap.take() }.toList()
+            val heapSorted = sequence { while(heap.isNotEmpty()) yield(heap.take()) }.toList()
 
             assertEquals(data.sorted(), heapSorted)
         }
@@ -28,12 +28,12 @@ class HeapTest {
             val data = (0..500).toMutableList()
             data.shuffle(random)
 
-            val heap: Heap<Int> = BinaryHeap(cmp)
+            val heap = heap(cmp)
             heap += data
 
             assertEquals(cmp, heap.comparator)
 
-            val heapSorted = generateSequence { if(heap.isEmpty()) null else heap.take() }.toList()
+            val heapSorted = sequence { while(heap.isNotEmpty()) yield(heap.take()) }.toList()
 
             assertEquals(data.sortedWith(cmp), heapSorted)
         }
