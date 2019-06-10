@@ -17,17 +17,15 @@ class BinaryHeap<T>(override val comparator: Comparator<T>): Heap<T>, AbstractMu
         const val MIN_SIZE = 16
     }
 
-    private var data: Array<Any?> = arrayOfNulls(MIN_SIZE)
-    private inline val capacity get() = data.size
-    override var size = 0
+    private var data: TArray<T> = TArray(MIN_SIZE)
+    private inline val capacity: Int get() = data.size
+    override var size: Int = 0
 
     private fun growTo(size: Int) {
         var newCapacity = capacity
         while(newCapacity <= size) newCapacity *= 2
 
-        val newArr = arrayOfNulls<Any>(newCapacity)
-        data.copyInto(newArr)
-        data = newArr
+        data = data.copyOf(newCapacity)
     }
 
     private inline val Int.leftIndex get() = this * 2 + 1
@@ -76,7 +74,7 @@ class BinaryHeap<T>(override val comparator: Comparator<T>): Heap<T>, AbstractMu
         }
     }
 
-    private fun siftUp(kk: Int, v: Any?) {
+    private fun siftUp(kk: Int, v: T?) {
         var k = kk
         while(k > 0) {
             val parent = k.parentIndex
@@ -88,7 +86,7 @@ class BinaryHeap<T>(override val comparator: Comparator<T>): Heap<T>, AbstractMu
         data[k] = v
     }
 
-    private fun siftDown(kk: Int, v: Any?) {
+    private fun siftDown(kk: Int, v: T?) {
         val half = size / 2
         var k = kk
         while(k < half) {
@@ -111,7 +109,7 @@ class BinaryHeap<T>(override val comparator: Comparator<T>): Heap<T>, AbstractMu
     override fun take(): T = current?.also { removeAt(0) } ?: throw IllegalArgumentException("Heap is empty")
     @Suppress(Warnings.UNCHECKED_CAST)
     override val current: T?
-        get() = data[0] as T?
+        get() = data[0]
 
     override fun isEmpty(): Boolean = size == 0
 }

@@ -34,7 +34,7 @@ class ArrayDeque<T>: Deque<T>, Queue<T> {
         private const val INITIAL_CAPACITY = 16
     }
 
-    private var data: Array<Any?> = arrayOfNulls(INITIAL_CAPACITY)
+    private var data: TArray<T> = TArray(INITIAL_CAPACITY)
     private var firstPtr: Int = 0
     private var lastPtr: Int = 0
 
@@ -56,7 +56,7 @@ class ArrayDeque<T>: Deque<T>, Queue<T> {
         val newCapacity = capacity * 2
         if (newCapacity < 0)
             throw IllegalStateException("Sorry, deque too big")
-        val a = arrayOfNulls<Any>(newCapacity)
+        val a = TArray<T>(newCapacity)
         data.copyInto(a, 0, p, p + r) // data[p..p+r] -> a[0..r]
         data.copyInto(a, r, 0, p) // data[0..p] -> a[r..r+p]
         data = a
@@ -66,12 +66,12 @@ class ArrayDeque<T>: Deque<T>, Queue<T> {
 
     @Suppress(Warnings.UNCHECKED_CAST)
     override var first: T?
-        get() = if(isEmpty()) null else data[firstIndex] as T?
+        get() = if(isEmpty()) null else data[firstIndex]
         private set(value) { data[firstIndex] = value }
 
     @Suppress(Warnings.UNCHECKED_CAST)
     override var last: T?
-        get() = if(isEmpty()) null else data[lastIndex] as T?
+        get() = if(isEmpty()) null else data[lastIndex]
         private set(value) { data[lastIndex] = value }
 
     override fun putFirst(value: T) {
