@@ -73,5 +73,8 @@ class TArrayTest {
 
         val emptyArr = TArray<Int>(0)
         assertEquals("[]", "$emptyArr")
+
+        val oneElement = TArray(1) { 42 }
+        assertEquals("[42]", "$oneElement")
     }
 }
