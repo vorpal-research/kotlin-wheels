@@ -12,6 +12,8 @@ operator fun <T> Stack<T>.plusAssign(element: T) = push(element)
 operator fun <T> Stack<T>.plusAssign(iterable: Iterable<T>) = iterable.forEach { push(it) }
 operator fun <T> Stack<T>.plusAssign(sequence: Sequence<T>) = sequence.forEach { push(it) }
 
+fun <T> Stack<T>.isNotEmpty() = !isEmpty()
+
 class DefaultStack<T>(val list: MutableList<T> = mutableListOf()): Stack<T> {
     override fun push(value: T) { list.add(value) }
 
