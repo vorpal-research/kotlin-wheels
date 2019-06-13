@@ -20,6 +20,7 @@ class BinaryHeap<T>(override val comparator: Comparator<T>): Heap<T>, AbstractMu
     private var data: TArray<T> = TArray(MIN_SIZE)
     private inline val capacity: Int get() = data.size
     override var size: Int = 0
+        private set
 
     private fun growTo(size: Int) {
         var newCapacity = capacity

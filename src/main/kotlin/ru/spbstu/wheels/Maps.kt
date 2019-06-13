@@ -42,3 +42,11 @@ fun <K, V, M: MutableMap<K, V>> Sequence<Map.Entry<K, V>>.toMap(m: M): M =
         m.apply { this@toMap.forEach { put(it.key, it.value) } }
 
 fun <K, V> Sequence<Map.Entry<K, V>>.toMap(): Map<K, V> = toMap(mutableMapOf())
+
+@JvmName("pairsToMutableMap")
+fun <K, V> Iterable<Pair<K, V>>.toMutableMap(): MutableMap<K, V> = toMap(mutableMapOf())
+@JvmName("pairsToMutableMap")
+fun <K, V> Sequence<Pair<K, V>>.toMutableMap(): MutableMap<K, V> = toMap(mutableMapOf())
+
+fun <K, V> Iterable<Map.Entry<K, V>>.toMutableMap(): MutableMap<K, V> = toMap(mutableMapOf())
+fun <K, V> Sequence<Map.Entry<K, V>>.toMutableMap(): MutableMap<K, V> = toMap(mutableMapOf())
