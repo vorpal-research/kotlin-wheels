@@ -19,15 +19,15 @@ fun <K, V> Map<K, V>.getEntry(key: K): Map.Entry<K, V>? = when (key) {
 }
 
 @Suppress(Warnings.UNCHECKED_CAST)
-fun <K, V> Map<K, V>.getOption(key: K): Option<V> = when(key) {
+fun <K, V> Map<K, V>.getOption(key: K): Option<V> = when (key) {
     in this -> Option.just(get(key) as V) // not !! because V may be nullable
     else -> Option.empty()
 }
 
-fun <K, V, M: MutableMap<K, V>> Iterable<Map.Entry<K, V>>.toMap(m: M): M =
+fun <K, V, M : MutableMap<K, V>> Iterable<Map.Entry<K, V>>.toMap(m: M): M =
         m.apply { this@toMap.forEach { put(it.key, it.value) } }
 
-fun <K, V> Iterable<Map.Entry<K, V>>.toMap(): Map<K, V> = when(this) {
+fun <K, V> Iterable<Map.Entry<K, V>>.toMap(): Map<K, V> = when (this) {
     is Collection -> (this as Collection<Map.Entry<K, V>>).toMap()
     else -> toMap(mutableMapOf())
 }
@@ -38,15 +38,49 @@ fun <K, V> Collection<Map.Entry<K, V>>.toMap(): Map<K, V> = when (size) {
     else -> toMap(LinkedHashMap(size))
 }
 
-fun <K, V, M: MutableMap<K, V>> Sequence<Map.Entry<K, V>>.toMap(m: M): M =
+fun <K, V, M : MutableMap<K, V>> Sequence<Map.Entry<K, V>>.toMap(m: M): M =
         m.apply { this@toMap.forEach { put(it.key, it.value) } }
 
 fun <K, V> Sequence<Map.Entry<K, V>>.toMap(): Map<K, V> = toMap(mutableMapOf())
 
 @JvmName("pairsToMutableMap")
 fun <K, V> Iterable<Pair<K, V>>.toMutableMap(): MutableMap<K, V> = toMap(mutableMapOf())
+
 @JvmName("pairsToMutableMap")
 fun <K, V> Sequence<Pair<K, V>>.toMutableMap(): MutableMap<K, V> = toMap(mutableMapOf())
 
 fun <K, V> Iterable<Map.Entry<K, V>>.toMutableMap(): MutableMap<K, V> = toMap(mutableMapOf())
 fun <K, V> Sequence<Map.Entry<K, V>>.toMutableMap(): MutableMap<K, V> = toMap(mutableMapOf())
+
+fun <K, V, A : Appendable> Map<K, V>.joinTo(
+        buffer: A,
+        separator: CharSequence = ", ",
+        prefix: CharSequence = "",
+        postfix: CharSequence = "",
+        limit: Int = -1,
+        truncated: CharSequence = "...",
+        transform: ((K, V) -> CharSequence)? = null
+): A {
+    buffer.append(prefix)
+    var count = 0
+    for (entry in this) {
+        if (++count > 1) buffer.append(separator)
+        if (limit < 0 || count <= limit) {
+            if (transform != null) buffer.append(transform(entry.key, entry.value))
+            else buffer.append("$entry")
+        } else break
+    }
+    if (limit in 0 until count) buffer.append(truncated)
+    buffer.append(postfix)
+    return buffer
+}
+
+fun <K, V> Map<K, V>.joinToString(
+        separator: CharSequence = ", ",
+        prefix: CharSequence = "",
+        postfix: CharSequence = "",
+        limit: Int = -1,
+        truncated: CharSequence = "...",
+        transform: ((K, V) -> CharSequence)? = null): String {
+    return joinTo(StringBuilder(), separator, prefix, postfix, limit, truncated, transform).toString()
+}

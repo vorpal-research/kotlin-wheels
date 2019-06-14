@@ -42,4 +42,36 @@ class MapsTest {
         assertNotEquals(Option.empty(), map2.getOption("h"))
         assertEquals(Option.just(null), map2.getOption("h"))
     }
+
+    @Test
+    fun joinTo() {
+
+        val m0 = mapOf<Int, String>()
+
+        assertEquals(m0.entries.joinToString(), m0.joinToString())
+
+        val m1 = mapOf("Hello" to 1.0, "World" to 3.0)
+
+        assertEquals(m1.entries.joinToString(), m1.joinToString())
+        assertEquals(
+                m1.entries.joinToString(prefix = "<<", postfix = ">>", separator = ";"),
+                m1.joinToString(prefix = "<<", postfix = ">>", separator = ";")
+        )
+
+        val m2 = (0..100).map { it to "y - x${it + 1}" }.toMap()
+
+        assertEquals(m2.entries.joinToString(), m2.joinToString())
+        assertEquals(
+                m2.entries.joinToString(prefix = "<<", postfix = ">>", separator = ";"),
+                m2.joinToString(prefix = "<<", postfix = ">>", separator = ";")
+        )
+        assertEquals(
+                m2.entries.joinToString(prefix = "<<", postfix = ">>", separator = ";", limit = 2),
+                m2.joinToString(prefix = "<<", postfix = ">>", separator = ";", limit = 2)
+        )
+        assertEquals(
+                m2.entries.joinToString(prefix = "<<", postfix = ">>", separator = ";", limit = 2) { (k, v) -> "$v[$k]" },
+                m2.joinToString(prefix = "<<", postfix = ">>", separator = ";", limit = 2) { k, v -> "$v[$k]" }
+        )
+    }
 }
