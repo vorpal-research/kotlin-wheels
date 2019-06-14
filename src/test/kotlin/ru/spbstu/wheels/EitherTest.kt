@@ -5,13 +5,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class EitherTest {
+
+    // fine if compiles
+    fun <T> checkSubtypeOf(v: T) {}
+
     @Test
     fun simple() {
         val ei = Either.left(listOf(2)) ?: Either.right(setOf(""))
 
-        fun checkExactType(c: Collection<Any>) {}
-
-        checkExactType(ei.value)
+        checkSubtypeOf<Collection<Any>>(ei.value)
 
         assertTrue(ei.isLeft())
         assertEquals(Option.just(listOf(2)), ei.leftOption)

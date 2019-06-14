@@ -49,7 +49,7 @@ inline fun <T> TArray(size: Int, init: (Int) -> T): TArray<T> {
     return res
 }
 
-@Suppress("DEPRECATION", Warnings.UNCHECKED_CAST)
+@Suppress(Warnings.DEPRECATION, Warnings.UNCHECKED_CAST)
 fun <T> tarrayOf(vararg values: T): TArray<T> = TArray(values.size) { values[it] }
 
 @Suppress(Warnings.UNCHECKED_CAST, Warnings.NOTHING_TO_INLINE)
@@ -62,13 +62,13 @@ inline fun <T> TArray<out T>.copyInto(destination: TArray<T>,
     inner.copyInto(destination.inner, destinationOffset, startIndex, endIndex)
 }
 
-@Suppress("DEPRECATION")
+@Suppress(Warnings.DEPRECATION)
 inline fun <T> TArray<out T>.copyOf(): TArray<T> = TArray(inner.copyOf())
 
-@Suppress("DEPRECATION")
+@Suppress(Warnings.DEPRECATION)
 inline fun <T> TArray<out T>.copyOf(newSize: Int): TArray<T> = TArray(inner.copyOf(newSize))
 
-@Suppress("DEPRECATION")
+@Suppress(Warnings.DEPRECATION)
 inline fun <T> TArray<out T>.copyOfRange(fromIndex: Int, toIndex: Int): TArray<T> =
         TArray(inner.copyOfRange(fromIndex, toIndex))
 
