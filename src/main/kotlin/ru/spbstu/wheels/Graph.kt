@@ -53,14 +53,17 @@ inline fun <T> aStarSearch(from: T,
 
     open += (from to 0)
 
+    closed += from
+
     while (!open.isEmpty()) {
         val (peek, len) = open.take()
+
         if (goal(peek)) return reconstructPath(peek, paths)
 
-        closed += peek
         for (e in neighbours(peek)) if (e !in closed) {
             paths[e] = peek
             open += (e to (len + 1))
+            closed += e
         }
     }
     return null
