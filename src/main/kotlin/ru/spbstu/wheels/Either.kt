@@ -28,6 +28,9 @@ inline fun <B> Either<*, B>.asRight(): B = value as B
 inline fun <reified A> Either<A, *>.isLeft(): Boolean = value is A
 inline fun <reified B> Either<*, B>.isRight(): Boolean = value is B
 
+inline fun <reified A> Either<A, *>.isNotLeft(): Boolean = value !is A
+inline fun <reified B> Either<*, B>.isNotRight(): Boolean = value !is B
+
 inline val <reified T> Either<T, *>.leftOption: Option<T>
     get() = if (unsafeValue is T) Option.just(unsafeValue) else Option.empty()
 inline val <reified T> Either<*, T>.rightOption: Option<T>

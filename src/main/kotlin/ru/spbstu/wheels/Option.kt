@@ -6,7 +6,6 @@ import kotlin.contracts.contract
 import kotlin.reflect.KProperty
 
 inline class Option<out T>
-@Deprecated(replaceWith = ReplaceWith("Option.just(unsafeValue)"), message = "Do not use")
 @Suppress("NON_PUBLIC_PRIMARY_CONSTRUCTOR_OF_INLINE_CLASS")
 @PublishedApi
 internal constructor(@PublishedApi internal val unsafeValue: Any?) {
