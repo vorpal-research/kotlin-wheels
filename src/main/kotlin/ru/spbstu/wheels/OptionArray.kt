@@ -16,7 +16,7 @@ inline class OptionArray<T>
 internal constructor(@PublishedApi internal val inner: Array<Any?>) {
 
     @Suppress("DEPRECATION")
-    constructor(size: Int) : this(Array(size) { Option.NOVALUE })
+    constructor(size: Int) : this(Array<Any?>(size) { Option.NOVALUE })
 
 //    @Suppress("DEPRECATION")
 //    constructor(size: Int, init: (Int) -> T) : this(Array<Any?>(size, init))

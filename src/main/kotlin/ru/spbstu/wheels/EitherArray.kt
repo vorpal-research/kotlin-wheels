@@ -1,3 +1,5 @@
+@file: Suppress(Warnings.NOTHING_TO_INLINE)
+
 package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
