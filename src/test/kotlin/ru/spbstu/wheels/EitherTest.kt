@@ -22,4 +22,17 @@ class EitherTest {
 
         assertEquals(Either.left("2"), ei.mapRight { 2 }.mapLeft { it.joinToString("") })
     }
+
+
+    @Test
+    fun visit() {
+        val ei: Either<Int, String> = if(false) Either.left(2) else Either.right("Hello")
+
+        assertEquals(5, ei.visit(onLeft = { it * 8 }, onRight = { it.length }))
+
+        val ei2: Either<Int, String> = if(true) Either.left(2) else Either.right("Hello")
+
+        assertEquals(16, ei2.visit(onLeft = { it * 8 }, onRight = { it.length }))
+    }
+
 }

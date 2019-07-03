@@ -67,3 +67,12 @@ inline operator fun <
                 else -> asRight().compareTo(that.asRight())
             }
         }
+
+@Suppress(Warnings.NOTHING_TO_INLINE)
+inline fun <A, B> Either<A, B>.flipSides(): Either<B, A> = Either(unsafeValue)
+
+inline fun <reified A, B, R> Either<A, B>.visit(onLeft: (A) -> R, onRight: (B) -> R) =
+        when {
+            isLeft() -> onLeft(asLeft())
+            else -> onRight(asRight())
+        }
