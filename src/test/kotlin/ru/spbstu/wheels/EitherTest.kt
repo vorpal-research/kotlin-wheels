@@ -11,7 +11,7 @@ class EitherTest {
 
     @Test
     fun simple() {
-        val ei = Either.left(listOf(2)) ?: Either.right(setOf(""))
+        val ei: Either<List<Int>, Set<String>> = Either.left(listOf(2)) ?: Either.right(setOf(""))
 
         checkSubtypeOf<Collection<Any>>(ei.value)
 
