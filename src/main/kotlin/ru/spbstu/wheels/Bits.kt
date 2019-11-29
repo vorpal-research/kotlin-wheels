@@ -1,11 +1,13 @@
 @file: Suppress(Warnings.NOTHING_TO_INLINE)
+@file: UseExperimental(ExperimentalStdlibApi::class, ExperimentalUnsignedTypes::class)
 
 package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
 import kotlin.math.ceil
 
-import java.lang.Long as JLong
+typealias JLong = Unit
+typealias Integer = Unit
 
 inline fun Int.asBits() = IntBits(this)
 
@@ -16,8 +18,9 @@ val IntBits.Companion.One get() = 1.asBits()
 val IntBits.Companion.AllOnes get() = (-1).asBits()
 val IntBits.Companion.SIZE get() = Int.SIZE_BITS
 
-fun IntBits.Companion.fromString(s: String): IntBits = bits(Integer.parseUnsignedInt(s, 2))
+fun IntBits.Companion.fromString(s: String): IntBits = IntBits(s.toUInt(2).toInt())
 
+@UseExperimental(ExperimentalStdlibApi::class)
 inline class IntBits
 constructor(val data: Int) {
     companion object {}
@@ -31,13 +34,13 @@ constructor(val data: Int) {
     inline infix fun or(that: IntBits): IntBits = IntBits(data or that.data)
     inline infix fun xor(that: IntBits): IntBits = IntBits(data xor that.data)
     inline fun inv(): IntBits = data.inv().asBits()
-    inline fun reverse(): IntBits = Integer.reverse(data).asBits()
+    //inline fun reverse(): IntBits = Integer.reverse(data).asBits()
 
-    inline val popCount: Int get() = Integer.bitCount(data)
-    inline val lowestBitSet get() = IntBits(Integer.lowestOneBit(data))
-    inline val highestBitSet get() = IntBits(Integer.highestOneBit(data))
-    inline val numberOfLeadingZeros: Int get() = Integer.numberOfLeadingZeros(data)
-    inline val numberOfTrailingZeros: Int get() = Integer.numberOfTrailingZeros(data)
+    inline val popCount: Int get() = data.countOneBits()
+    inline val lowestBitSet get() = IntBits(data.takeLowestOneBit())
+    inline val highestBitSet get() = IntBits(data.takeHighestOneBit())
+    inline val numberOfLeadingZeros: Int get() = data.countLeadingZeroBits()
+    inline val numberOfTrailingZeros: Int get() = data.countTrailingZeroBits()
 
     inline fun forEachOneBit(body: (IntBits) -> Unit) {
         var mask = this
@@ -94,7 +97,7 @@ constructor(val data: Int) {
 
 
     @Suppress(Warnings.OVERRIDE_BY_INLINE)
-    override inline fun toString(): String = Integer.toBinaryString(data)
+    override inline fun toString(): String = data.toUInt().toString(2)
 }
 
 inline fun bits(data: Int) = data.asBits()
@@ -108,8 +111,9 @@ val LongBits.Companion.One get() = 1L.asBits()
 val LongBits.Companion.AllOnes get() = (-1L).asBits()
 val LongBits.Companion.SIZE get() = Long.SIZE_BITS
 
-fun LongBits.Companion.fromString(s: String): LongBits = bits(JLong.parseUnsignedLong(s, 2))
+fun LongBits.Companion.fromString(s: String): LongBits = bits(s.toULong(2).toLong())
 
+@UseExperimental(ExperimentalStdlibApi::class)
 inline class LongBits
 constructor(val data: Long) {
     companion object {}
@@ -123,13 +127,13 @@ constructor(val data: Long) {
     inline infix fun or(that: LongBits): LongBits = LongBits(data or that.data)
     inline infix fun xor(that: LongBits): LongBits = LongBits(data xor that.data)
     inline fun inv(): LongBits = data.inv().asBits()
-    inline fun reverse(): LongBits = JLong.reverse(data).asBits()
+    //inline fun reverse(): LongBits = JLong.reverse(data).asBits()
 
-    inline val popCount: Int get() = JLong.bitCount(data)
-    inline val lowestBitSet get() = LongBits(JLong.lowestOneBit(data))
-    inline val highestBitSet get() = LongBits(JLong.highestOneBit(data))
-    inline val numberOfLeadingZeros: Int get() = JLong.numberOfLeadingZeros(data)
-    inline val numberOfTrailingZeros: Int get() = JLong.numberOfTrailingZeros(data)
+    inline val popCount: Int get() = data.countOneBits()
+    inline val lowestBitSet get() = LongBits(data.takeLowestOneBit())
+    inline val highestBitSet get() = LongBits(data.takeHighestOneBit())
+    inline val numberOfLeadingZeros: Int get() = data.countLeadingZeroBits()
+    inline val numberOfTrailingZeros: Int get() = data.countTrailingZeroBits()
 
     inline fun forEachOneBit(body: (LongBits) -> Unit) {
         var mask = this
@@ -186,7 +190,7 @@ constructor(val data: Long) {
 
 
     @Suppress(Warnings.OVERRIDE_BY_INLINE)
-    override inline fun toString(): String = JLong.toBinaryString(data)
+    override inline fun toString(): String = data.toULong().toString(2)
 }
 
 inline fun bits(data: Long) = data.asBits()
