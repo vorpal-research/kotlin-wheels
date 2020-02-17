@@ -106,3 +106,5 @@ inline fun <A, B, C, R> zip3(a: Try<A>, b: Try<B>, c: Try<C>, body: (A, B, C) ->
 fun <A, B, C> zip3(a: Try<A>, b: Try<B>, c: Try<C>): Try<Triple<A, B, C>> = zip3(a, b, c, ::Triple)
 
 operator fun <T> Try<T>.getValue(thisRef: Any?, prop: KProperty<*>) = getOrThrow()
+
+fun <T> Try<T>.toOption(): Option<T> = if(isNotException()) Option.just(getOrThrow()) else Option.empty()

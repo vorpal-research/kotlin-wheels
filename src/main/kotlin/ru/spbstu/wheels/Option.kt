@@ -1,8 +1,6 @@
 package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 import kotlin.reflect.KProperty
 
 inline class Option<out T>
@@ -19,7 +17,7 @@ internal constructor(@PublishedApi internal val unsafeValue: Any?) {
 
         fun <T> empty(): Option<T> = EMPTY
 
-        fun <T> ofNullable(value: T) = value?.let(::just) ?: empty()
+        fun <T> ofNullable(value: T?): Option<T> = value?.let(::just) ?: empty()
     }
 
     fun isEmpty() = NOVALUE === unsafeValue
@@ -83,3 +81,7 @@ fun <T> Iterator<T>.nextOption() = if (hasNext()) Option.just(next()) else Optio
 
 @Suppress(Warnings.UNCHECKED_CAST)
 operator fun <T> Option<T>.iterator(): Iterator<T> = iterator { if(isNotEmpty()) yield(unsafeValue as T) }
+
+fun <T> Option<T>.toTry(): Try<T> =
+        if(isNotEmpty()) Try.just(get())
+        else Try.exception(NoSuchElementException("Option.empty().toTry()"))
