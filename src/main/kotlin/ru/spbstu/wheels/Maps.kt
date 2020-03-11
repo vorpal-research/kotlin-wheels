@@ -92,3 +92,15 @@ inline fun <K, V, reified B> Map<K, V>.mapToArray(body: (Map.Entry<K, V>) -> B):
     @Suppress(Warnings.UNCHECKED_CAST)
     return arr as Array<B>
 }
+
+fun <A, B, M: MutableMap<A, B>> Iterable<A>.zipTo(that: Iterable<B>, to: M): M {
+    val thisIt = this.iterator()
+    val thatIt = that.iterator()
+    while(thisIt.hasNext() && thatIt.hasNext()) {
+        to.put(thisIt.next(), thatIt.next())
+    }
+    return to
+}
+
+@Suppress(Warnings.NOTHING_TO_INLINE)
+inline fun <K, V> Map<K, V>.asMap(): Map<K, V> = this
