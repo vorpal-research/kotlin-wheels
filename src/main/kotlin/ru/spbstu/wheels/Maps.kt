@@ -84,3 +84,11 @@ fun <K, V> Map<K, V>.joinToString(
         transform: ((K, V) -> CharSequence)? = null): String {
     return joinTo(StringBuilder(), separator, prefix, postfix, limit, truncated, transform).toString()
 }
+
+inline fun <K, V, reified B> Map<K, V>.mapToArray(body: (Map.Entry<K, V>) -> B): Array<B> {
+    val arr = arrayOfNulls<B>(size)
+    var i = 0
+    for(e in this) arr[i++] = body(e)
+    @Suppress(Warnings.UNCHECKED_CAST)
+    return arr as Array<B>
+}

@@ -1,5 +1,7 @@
 package ru.spbstu.wheels
 
+import kotlinx.warnings.Warnings
+
 inline fun <A, B, R> Iterable<A>.product(that: Iterable<B>, body: (A, B) -> R): List<R> {
     val res = mutableListOf<R>()
     for (a in this)
@@ -32,3 +34,11 @@ inline fun <reified T> Iterable<*>.firstInstance(): T? {
 }
 
 fun <T> List<T>.getOrNull(index: Int) = if(index in 0..lastIndex) get(index) else null
+
+inline fun <A, reified B> Collection<A>.mapToArray(body: (A) -> B): Array<B> {
+    val arr = arrayOfNulls<B>(size)
+    var i = 0
+    for(e in this) arr[i++] = body(e)
+    @Suppress(Warnings.UNCHECKED_CAST)
+    return arr as Array<B>
+}
