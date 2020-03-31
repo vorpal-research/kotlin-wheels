@@ -1,5 +1,5 @@
 @file: Suppress(Warnings.NOTHING_TO_INLINE)
-@file: UseExperimental(ExperimentalStdlibApi::class, ExperimentalUnsignedTypes::class)
+@file: OptIn(ExperimentalStdlibApi::class, ExperimentalUnsignedTypes::class)
 
 package ru.spbstu.wheels
 
@@ -20,7 +20,7 @@ val IntBits.Companion.SIZE get() = Int.SIZE_BITS
 
 fun IntBits.Companion.fromString(s: String): IntBits = IntBits(s.toUInt(2).toInt())
 
-@UseExperimental(ExperimentalStdlibApi::class)
+@OptIn(ExperimentalStdlibApi::class)
 inline class IntBits
 constructor(val data: Int) {
     companion object {}
@@ -113,7 +113,7 @@ val LongBits.Companion.SIZE get() = Long.SIZE_BITS
 
 fun LongBits.Companion.fromString(s: String): LongBits = bits(s.toULong(2).toLong())
 
-@UseExperimental(ExperimentalStdlibApi::class)
+@OptIn(ExperimentalStdlibApi::class)
 inline class LongBits
 constructor(val data: Long) {
     companion object {}

@@ -29,5 +29,6 @@ open class Expando {
 
 
 inline class Expansion(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    @Suppress(Warnings.OVERRIDE_BY_INLINE, Warnings.NOTHING_TO_INLINE)
     override inline fun toString(): String = map.entries.joinToString(", ") { (k, v) -> "$k=$v" }
 }

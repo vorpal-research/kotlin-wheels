@@ -6,11 +6,11 @@
 
     <groupId>ru.spbstu</groupId>
     <artifactId>kotlin-wheels</artifactId>
-    <version>0.0.0.6</version>
+    <version>0.0.0.8-SNAPSHOT</version>
 
     <properties>
         <java.version>1.8</java.version>
-        <kotlin.version>1.3.61</kotlin.version>
+        <kotlin.version>1.3.71</kotlin.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

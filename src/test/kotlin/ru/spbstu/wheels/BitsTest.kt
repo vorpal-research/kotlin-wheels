@@ -4,7 +4,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-@ExperimentalStdlibApi
 class BitsTest {
     @Test
     fun boringOps() {
