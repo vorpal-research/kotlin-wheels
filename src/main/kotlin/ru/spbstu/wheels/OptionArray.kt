@@ -72,6 +72,7 @@ inline fun <T> OptionArray<T>.fill(element: T, fromIndex: Int = 0, toIndex: Int 
 }
 
 inline fun <A, B> OptionArray<out A>.mapValues(body: (A) -> B): OptionArray<B> {
+    @Suppress(Warnings.DEPRECATION)
     val res = OptionArray<B>(inner.copyOf())
     for (i in 0 until size)
         if(this[i].isNotEmpty()) res.inner[i] = body(this[i].get())

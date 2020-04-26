@@ -27,6 +27,7 @@ fun <K, V> Map<K, V>.getOption(key: K): Option<V> = when (key) {
 fun <K, V, M : MutableMap<K, V>> Iterable<Map.Entry<K, V>>.toMap(m: M): M =
         m.apply { this@toMap.forEach { put(it.key, it.value) } }
 
+@Suppress(Warnings.USELESS_CAST)
 fun <K, V> Iterable<Map.Entry<K, V>>.toMap(): Map<K, V> = when (this) {
     is Collection -> (this as Collection<Map.Entry<K, V>>).toMap()
     else -> toMap(mutableMapOf())
