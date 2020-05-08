@@ -76,14 +76,39 @@ class QueueTest {
     fun mixingSmall() { // the point is doing mixed operations _without_ array reallocation
         val que = queue<Int>()
 
+        assertTrue(que.isEmpty())
+
         que += 0..10
+
+        assertEquals(11, que.size)
 
         val elems = (0..5).map { que.take() }
         assertEquals((0..5).toList(), elems)
 
-        que += 11..14
+        que += (11..14).asSequence()
 
         val elems2 = (0..8).map { que.take() }
         assertEquals((6..14).toList(), elems2)
+    }
+
+    @Test
+    fun mixingDeque() {
+        val que = deque<Int>()
+
+        for (i in 0..49) {
+            que.putFirst(i)
+            que.putLast(i + 50)
+        }
+
+        assertEquals(100, que.size)
+
+        for (i in 49 downTo 0) {
+            assertEquals(i, que.first)
+            assertEquals(i, que.takeFirst())
+        }
+        for (i in 50..99) {
+            assertEquals(i, que.first)
+            assertEquals(i, que.takeFirst())
+        }
     }
 }
