@@ -63,3 +63,20 @@ inline fun <T> Collection<T>.asCollection(): Collection<T> = this
 inline fun <T> Set<T>.asSet(): Set<T> = this
 @Suppress(Warnings.NOTHING_TO_INLINE)
 inline fun <T> List<T>.asList(): List<T> = this
+
+inline fun <T> MutableList<T>.resize(newSize: Int, fill: (Int) -> T) = when {
+    size >= newSize -> {
+        repeat(size - newSize) {
+            removeAt(lastIndex)
+        }
+    }
+    else -> {
+        if(this is ArrayList) {
+            ensureCapacity(newSize)
+        }
+        val startingSize = size
+        repeat(newSize - startingSize) {
+            add(fill(it + startingSize))
+        }
+    }
+}

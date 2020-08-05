@@ -60,4 +60,18 @@ class CollectionsTest {
                 (lst2 product lst1).map { (a, b) -> b to a }.toSet()
         )
     }
+
+    @Test
+    fun resize() {
+        val lst = (1..220).toMutableList()
+        assertEquals(lst.size, 220)
+        lst.resize(10) { 0 }
+        assertEquals((1..10).toList(), lst)
+        lst.resize(20) { it + 1 }
+        assertEquals((1..20).toList(), lst)
+        lst.resize(0) { 0 }
+        assertEquals(listOf<Int>(), lst)
+        lst.resize(12) { it }
+        assertEquals(List(12) { it }, lst)
+    }
 }
