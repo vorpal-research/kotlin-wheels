@@ -20,6 +20,7 @@ abstract class MDMap<K, V>(val inner: MutableMap<K, V> = mutableMapOf()) {
 }
 
 fun <K, V> MDMap<K, V>.toMap(): Map<K, V> = inner.toMap()
+fun <K, V> MDMap<K, V>.asFunction(): (K) -> V = ::get
 
 typealias MapToSet<K, VS> = MDMap<K, MutableSet<VS>>
 
