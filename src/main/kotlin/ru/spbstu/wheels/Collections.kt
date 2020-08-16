@@ -80,3 +80,23 @@ inline fun <T> MutableList<T>.resize(newSize: Int, fill: (Int) -> T) = when {
         }
     }
 }
+
+infix fun <T> List<T>.identityEquals(that: List<T>): Boolean {
+    if(size != that.size) return false
+    for(i in 0..lastIndex) {
+        if(this[i] !== that[i]) return false
+    }
+    return true
+}
+
+infix fun <T> Iterable<T>.identityEquals(that: Iterable<T>): Boolean {
+    val thisIt = this.iterator()
+    val thatIt = that.iterator()
+    while (thisIt.hasNext() || thatIt.hasNext()) {
+        if(!thisIt.hasNext()) return false
+        if(!thatIt.hasNext()) return false
+
+        if(thisIt.next() !== thatIt.next()) return false
+    }
+    return true
+}
