@@ -90,12 +90,13 @@ inline fun <reified T> T.toRecordString(
         postfix: String = ")",
         separator: String = ","
 ): String =
-        toRecordString() + props.joinToString(prefix = "(", postfix = ")") { kvToString(it) }
+        toRecordString() + props.joinToString(prefix = prefix, postfix = postfix, separator = separator) { kvToString(it) }
 
 inline fun <reified T, A> T.toTupleString(
         prop1: (T) -> Any?,
         prefix: String = "(",
         postfix: String = ")",
+        @Suppress(Warnings.UNUSED_PARAMETER)
         separator: String = ","
 ): String =
         prefix +
@@ -168,7 +169,7 @@ inline fun <reified T> T.toTupleString(
         postfix: String = ")",
         separator: String = ","
 ): String =
-        props.joinToString(prefix = prefix, postfix = postfix) { it(this).toString() }
+        props.joinToString(prefix = prefix, postfix = postfix, separator = separator) { it(this).toString() }
 
 inline fun <reified T> T.defaultEquals(
         that: Any?,
@@ -181,7 +182,7 @@ inline fun <reified T> T.defaultEquals(
         that: Any?,
         prop1: (T) -> Any?,
         prop2: (T) -> Any?
-) =
+): Boolean =
         that is T &&
                 prop1(this) == prop1(that) &&
                 prop2(this) == prop2(that)
@@ -191,7 +192,7 @@ inline fun <reified T> T.defaultEquals(
         prop1: (T) -> Any?,
         prop2: (T) -> Any?,
         prop3: (T) -> Any?
-) =
+): Boolean =
         that is T &&
                 prop1(this) == prop1(that) &&
                 prop2(this) == prop2(that) &&
@@ -203,7 +204,7 @@ inline fun <reified T> T.defaultEquals(
         prop2: (T) -> Any?,
         prop3: (T) -> Any?,
         prop4: (T) -> Any?
-) =
+): Boolean =
         that is T &&
                 prop1(this) == prop1(that) &&
                 prop2(this) == prop2(that) &&
@@ -217,7 +218,7 @@ inline fun <reified T> T.defaultEquals(
         prop3: (T) -> Any?,
         prop4: (T) -> Any?,
         prop5: (T) -> Any?
-) =
+): Boolean =
         that is T &&
                 prop1(this) == prop1(that) &&
                 prop2(this) == prop2(that) &&
@@ -225,7 +226,7 @@ inline fun <reified T> T.defaultEquals(
                 prop4(this) == prop4(that) &&
                 prop5(this) == prop5(that)
 
-inline fun <reified T> T.defaultEquals(that: Any?, vararg props: (T) -> Any?) =
+inline fun <reified T> T.defaultEquals(that: Any?, vararg props: (T) -> Any?): Boolean =
         that is T && props.all { it(this) == it(that) }
 
 inline fun <reified T> T.defaultHashCode(
@@ -355,9 +356,50 @@ inline fun <reified T> T.defaultCompareTo(that: T, vararg props: (T) -> Comparab
     return 0
 }
 
+interface Copyable<T: Copyable<T>> {
+    fun copy(): T
+}
+
+inline fun <T, A1> T.defaultCopy(
+        constructor: (A1) -> T,
+        prop1: (T) -> A1
+): T = constructor(prop1(this))
+
+inline fun <T, A1, A2> T.defaultCopy(
+        constructor: (A1, A2) -> T,
+        prop1: (T) -> A1,
+        prop2: (T) -> A2
+): T = constructor(prop1(this), prop2(this))
+
+inline fun <T, A1, A2, A3> T.defaultCopy(
+        constructor: (A1, A2, A3) -> T,
+        prop1: (T) -> A1,
+        prop2: (T) -> A2,
+        prop3: (T) -> A3
+): T = constructor(prop1(this), prop2(this), prop3(this))
+
+inline fun <T, A1, A2, A3, A4> T.defaultCopy(
+        constructor: (A1, A2, A3, A4) -> T,
+        prop1: (T) -> A1,
+        prop2: (T) -> A2,
+        prop3: (T) -> A3,
+        prop4: (T) -> A4
+): T = constructor(prop1(this), prop2(this), prop3(this), prop4(this))
+
+inline fun <T, A1, A2, A3, A4, A5> T.defaultCopy(
+        constructor: (A1, A2, A3, A4, A5) -> T,
+        prop1: (T) -> A1,
+        prop2: (T) -> A2,
+        prop3: (T) -> A3,
+        prop4: (T) -> A4,
+        prop5: (T) -> A5
+): T = constructor(prop1(this), prop2(this), prop3(this), prop4(this), prop5(this))
+
 data class Data(val s: String, val i: Int): Comparable<Data> {
     override fun toString(): String = "Data" + toTupleString(Data::s, Data::i, prefix = "{", postfix = "}")
     override fun equals(other: Any?): Boolean = defaultEquals(other, Data::s, Data::i)
     override fun hashCode(): Int = defaultHashCode(Data::s, Data::i)
     override fun compareTo(other: Data): Int = defaultCompareTo(other, Data::s, Data::i)
+
+    fun copy() = defaultCopy(::Data, Data::s, Data::i)
 }
