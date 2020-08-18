@@ -130,3 +130,47 @@ fun <T> List<T>.slice(range: InfiniteRangeBefore<Int>) = run {
     require(range.endInclusive >= 0) { "Index range cannot be negative" }
     subList(0, range.endInclusive + 1).toList()
 }
+
+val IntProgression.size: Int
+    get() = when {
+        step < 0 -> (first - last) / abs(step) + 1
+        else -> (last - first) / step + 1
+    }.coerceAtLeast(0)
+
+operator fun IntProgression.get(index: Int): Int {
+    if(index !in 0 until size) throw IndexOutOfBoundsException()
+    return first + step * index
+}
+
+fun IntProgression.toTypedArray(): Array<Int> = Array(size) { get(it) }
+fun IntProgression.toIntArray(): IntArray = IntArray(size) { get(it) }
+
+val LongProgression.size: Int
+    get() = when {
+        step < 0 -> (first - last) / abs(step) + 1
+        else -> (last - first) / step + 1
+    }.coerceAtLeast(0).toInt()
+
+operator fun LongProgression.get(index: Int): Long {
+    if(index !in 0 until size) throw IndexOutOfBoundsException()
+    return first + step * index
+}
+
+fun LongProgression.toTypedArray(): Array<Long> = Array(size) { get(it) }
+fun LongProgression.toLongArray(): LongArray = LongArray(size) { get(it) }
+
+val CharProgression.size: Int
+    get() = when {
+        step < 0 -> (first - last) / abs(step) + 1
+        else -> (last - first) / step + 1
+    }.coerceAtLeast(0)
+
+operator fun CharProgression.get(index: Int): Char {
+    if(index !in 0 until size) throw IndexOutOfBoundsException()
+    return first + step * index
+}
+
+fun CharProgression.toTypedArray(): Array<Char> = Array(size) { get(it) }
+fun CharProgression.toCharArray(): CharArray = CharArray(size) { get(it) }
+
+fun CharProgression.charsToString(): String = String(toCharArray())

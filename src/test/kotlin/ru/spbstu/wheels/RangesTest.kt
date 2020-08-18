@@ -1,5 +1,6 @@
 package ru.spbstu.wheels
 
+import org.junit.Assert
 import org.junit.Test
 import java.lang.IllegalArgumentException
 import kotlin.test.assertEquals
@@ -105,5 +106,50 @@ class RangesTest {
         assertFailsWith<IllegalArgumentException> {
             (0..50).toList().slice(-Inf..-4)
         }
+    }
+
+
+
+    @Test
+    fun toArrayTest() {
+        fun assertProgression(progression: IntProgression) {
+            assertEquals(progression.toList().size, progression.size)
+            assertEquals(progression.toList(), progression.toTypedArray().asList())
+            assertEquals(progression.toList(), progression.toIntArray().asList())
+
+            val longVariant =
+                    LongProgression.fromClosedRange(
+                            progression.first.toLong(),
+                            progression.last.toLong(),
+                            progression.step.toLong()
+                    )
+            assertEquals(longVariant.toList().size, longVariant.size)
+            assertEquals(longVariant.toList(), longVariant.toTypedArray().asList())
+            assertEquals(longVariant.toList(), longVariant.toLongArray().asList())
+
+            val charVariant =
+                    CharProgression.fromClosedRange(
+                            'a' + progression.first,
+                            'a' + progression.last,
+                            progression.step
+                    )
+
+            assertEquals(charVariant.toList().size, charVariant.size)
+            assertEquals(charVariant.toList(), charVariant.toTypedArray().asList())
+            assertEquals(charVariant.toList(), charVariant.toCharArray().asList())
+        }
+
+        assertProgression(0..0)
+        assertProgression(0..1)
+        assertProgression(18..56)
+        assertProgression(-2 until 10)
+        assertProgression(10 downTo -2)
+        assertProgression(-10..10 step 2)
+        assertProgression(10 downTo -10 step 2)
+        assertProgression(-10..10 step 3)
+        assertProgression(10 downTo -10 step 3)
+
+        assertEquals("abc", ('a'..'c').charsToString())
+        assertEquals("036", ('0'..'8' step 3).charsToString())
     }
 }

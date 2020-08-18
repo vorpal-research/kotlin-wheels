@@ -1,6 +1,7 @@
 package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
+import kotlin.math.abs
 
 inline fun <A, B, R> Iterable<A>.product(that: Iterable<B>, body: (A, B) -> R): List<R> =
         productTo(that, mutableListOf(), body).asList()
