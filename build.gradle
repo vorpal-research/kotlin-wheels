@@ -71,8 +71,8 @@ publishing {
         maven {
             url = "https://api.bintray.com/maven/${bintrayOrg}/${bintrayRepo}/${project.name}/;publish=1;override=1"
             credentials {
-                username (project.property('bintrayUsername') ?: System.getenv('BINTRAY_USERNAME'))
-                password (project.property('bintrayPassword') ?: System.getenv('BINTRAY_PASSWORD'))
+                username (project.findProperty('bintrayUsername') ?: System.getenv('BINTRAY_USERNAME'))
+                password (project.findProperty('bintrayPassword') ?: System.getenv('BINTRAY_PASSWORD'))
             }
         }
     }
