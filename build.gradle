@@ -5,12 +5,14 @@ buildscript {
 }
 
 plugins {
-    id 'org.jetbrains.kotlin.multiplatform' version "$kotlinVersion"
+    id 'org.jetbrains.kotlin.multiplatform' version "1.4.10"
     id 'maven-publish'
 }
 
+def overwriteVersion = project.findProperty("forceVersion") ?: '0.0.1.0'
+
 group 'ru.spbstu'
-version "0.0.1.0"
+version overwriteVersion
 
 repositories {
     maven { url 'https://dl.bintray.com/vorpal-research/kotlin-maven' }
@@ -25,6 +27,16 @@ kotlin {
     }
 
     sourceSets {
+        all {
+            languageSettings {
+                languageVersion = '1.4'
+                apiVersion = '1.4'
+                enableLanguageFeature 'InlineClasses'
+                useExperimentalAnnotation 'kotlin.RequiresOptIn'
+                useExperimentalAnnotation 'kotlin.ExperimentalUnsignedTypes'
+            }
+        }
+
         commonMain {
             dependencies {
                 implementation 'ru.spbstu:kotlinx-warnings:1.4.10'

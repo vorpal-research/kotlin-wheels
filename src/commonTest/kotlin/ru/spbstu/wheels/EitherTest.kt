@@ -1,5 +1,7 @@
+@file: Suppress(Warnings.UNUSED_PARAMETER, Warnings.USELESS_ELVIS)
 package ru.spbstu.wheels
 
+import kotlinx.warnings.Warnings
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

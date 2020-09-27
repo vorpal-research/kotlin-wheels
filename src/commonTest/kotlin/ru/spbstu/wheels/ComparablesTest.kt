@@ -25,11 +25,11 @@ class ComparablesTest {
 
             assertEquals(
                     Foo("z", -1),
-                    listOf("z", "b", "z", "b", "c", "x").zip(-1..4, ::Foo).max()
+                    listOf("z", "b", "z", "b", "c", "x").zip(-1..4, ::Foo).maxOrNull()
             )
             assertEquals(
                     Foo("b", 2),
-                    listOf("z", "b", "z", "b", "c", "x").zip(-1..4, ::Foo).min()
+                    listOf("z", "b", "z", "b", "c", "x").zip(-1..4, ::Foo).minOrNull()
             )
         }
     }

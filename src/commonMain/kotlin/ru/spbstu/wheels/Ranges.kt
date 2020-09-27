@@ -173,4 +173,4 @@ operator fun CharProgression.get(index: Int): Char {
 fun CharProgression.toTypedArray(): Array<Char> = Array(size) { get(it) }
 fun CharProgression.toCharArray(): CharArray = CharArray(size) { get(it) }
 
-fun CharProgression.charsToString(): String = String(toCharArray())
+fun CharProgression.charsToString(): String = toCharArray().concatToString()

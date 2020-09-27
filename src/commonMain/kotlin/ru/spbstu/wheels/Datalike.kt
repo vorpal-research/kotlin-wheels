@@ -13,6 +13,7 @@ inline fun <reified T, A> T.toRecordString(
         prop1: KProperty1<T, *>,
         prefix: String = "(",
         postfix: String = ")",
+        @Suppress(Warnings.UNUSED_PARAMETER)
         separator: String = ","
 ): String =
         toRecordString() +

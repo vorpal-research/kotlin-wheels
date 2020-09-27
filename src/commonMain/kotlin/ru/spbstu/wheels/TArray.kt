@@ -77,6 +77,7 @@ inline fun <T> TArray<T>.fill(element: T, fromIndex: Int = 0, toIndex: Int = siz
 }
 
 inline fun <T : Comparable<T>> TArray<T>.sort() {
+    @Suppress(Warnings.UNCHECKED_CAST)
     inner.sortBy { it as Comparable<Any> }
 }
 
