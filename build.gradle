@@ -34,6 +34,7 @@ kotlin {
                 enableLanguageFeature 'InlineClasses'
                 useExperimentalAnnotation 'kotlin.RequiresOptIn'
                 useExperimentalAnnotation 'kotlin.ExperimentalUnsignedTypes'
+                useExperimentalAnnotation 'kotlin.ExperimentalStdlibApi'
             }
         }
 
@@ -49,15 +50,23 @@ kotlin {
                 implementation kotlin('test-annotations-common')
             }
         }
+        jvmMain {
+            dependsOn(commonMain)
+        }
         jvmTest {
             dependsOn(commonTest)
+            dependsOn(jvmMain)
             dependencies {
                 implementation kotlin('test')
                 implementation kotlin('test-testng')
             }
         }
+        jsMain {
+            dependsOn(commonMain)
+        }
         jsTest {
             dependsOn(commonTest)
+            dependsOn(jsMain)
             dependencies {
                 api kotlin('test-js')
             }

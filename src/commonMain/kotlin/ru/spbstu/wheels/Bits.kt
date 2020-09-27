@@ -20,6 +20,9 @@ val IntBits.Companion.SIZE get() = Int.SIZE_BITS
 
 fun IntBits.Companion.fromString(s: String): IntBits = IntBits(s.toUInt(2).toInt())
 
+@PublishedApi
+internal expect fun Int.reverseBits(): Int
+
 @OptIn(ExperimentalStdlibApi::class)
 inline class IntBits
 constructor(val data: Int) {
@@ -34,7 +37,7 @@ constructor(val data: Int) {
     inline infix fun or(that: IntBits): IntBits = IntBits(data or that.data)
     inline infix fun xor(that: IntBits): IntBits = IntBits(data xor that.data)
     inline fun inv(): IntBits = data.inv().asBits()
-    //inline fun reverse(): IntBits = Integer.reverse(data).asBits()
+    inline fun reverse(): IntBits = IntBits(data.reverseBits())
 
     inline val popCount: Int get() = data.countOneBits()
     inline val lowestBitSet get() = IntBits(data.takeLowestOneBit())
