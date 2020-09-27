@@ -1,5 +1,6 @@
 package ru.spbstu.wheels
 
+import kotlin.js.JsName
 import kotlin.reflect.KProperty
 
 interface MutableRef<T> {
@@ -12,6 +13,7 @@ fun <T> MutableRef<T>.assign(value: T) {
     this.value = value
 }
 
+@JsName("assign")
 infix fun <T> MutableRef<T>.`=`(value: T) = assign(value)
 
 fun <T> ref(value: T): MutableRef<T> = SimpleMutableRef(value)

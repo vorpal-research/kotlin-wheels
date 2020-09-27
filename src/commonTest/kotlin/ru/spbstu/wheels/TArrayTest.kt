@@ -1,6 +1,6 @@
 package ru.spbstu.wheels
 
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class TArrayTest {

@@ -77,7 +77,7 @@ inline fun <T> TArray<T>.fill(element: T, fromIndex: Int = 0, toIndex: Int = siz
 }
 
 inline fun <T : Comparable<T>> TArray<T>.sort() {
-    inner.sort()
+    inner.sortBy { it as Comparable<Any> }
 }
 
 inline fun <T> TArray<T>.sortWith(cmp: Comparator<T?>) {

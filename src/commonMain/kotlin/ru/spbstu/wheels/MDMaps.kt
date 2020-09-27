@@ -1,6 +1,8 @@
 package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
+import kotlin.js.JsName
+import kotlin.jvm.JvmName
 
 abstract class MDMap<K, V>(val inner: MutableMap<K, V> = mutableMapOf()) {
     abstract fun defaultValue(): V

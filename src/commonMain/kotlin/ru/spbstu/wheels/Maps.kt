@@ -1,6 +1,7 @@
 package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
+import kotlin.jvm.JvmName
 
 data class SimpleEntry<out K, out V>(override val key: K, override val value: V) : Map.Entry<K, V> {
 

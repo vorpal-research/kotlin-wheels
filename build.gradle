@@ -1,0 +1,67 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform' version "$kotlinVersion"
+    id 'maven-publish'
+}
+
+group 'ru.spbstu'
+version "0.0.1.0"
+
+repositories {
+    maven { url 'https://dl.bintray.com/vorpal-research/kotlin-maven' }
+    jcenter()
+}
+
+kotlin {
+    jvm()
+    js {
+        nodejs()
+        browser()
+    }
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation 'ru.spbstu:kotlinx-warnings:1.4.10'
+            }
+        }
+        commonTest {
+            dependsOn(commonMain)
+            dependencies {
+                implementation kotlin('test-common')
+                implementation kotlin('test-annotations-common')
+            }
+        }
+        jvmTest {
+            dependsOn(commonTest)
+            dependencies {
+                implementation kotlin('test')
+                implementation kotlin('test-testng')
+            }
+        }
+        jsTest {
+            dependsOn(commonTest)
+            dependencies {
+                api kotlin('test-js')
+            }
+        }
+    }
+
+}
+
+publishing {
+    repositories {
+        maven {
+            url = "https://api.bintray.com/maven/${bintrayOrg}/${bintrayRepo}/${project.name}/;publish=1;override=1"
+            credentials {
+                username (project.property('bintrayUsername') ?: System.getenv('BINTRAY_USERNAME'))
+                password (project.property('bintrayPassword') ?: System.getenv('BINTRAY_PASSWORD'))
+            }
+        }
+    }
+}

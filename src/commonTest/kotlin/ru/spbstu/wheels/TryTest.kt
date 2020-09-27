@@ -1,7 +1,7 @@
 package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.*
 
 @Suppress(Warnings.CAST_NEVER_SUCCEEDS, Warnings.UNREACHABLE_CODE, Warnings.USELESS_ELVIS)
