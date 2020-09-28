@@ -46,7 +46,7 @@ class BreakableTest {
 
         assertEquals(
                 (0..300).take(200).filter { it % 3 != 0 }.map { "$it" },
-                actual.toList()
+                actualS.toList()
         )
 
     }
