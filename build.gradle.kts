@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmCompilation
+import org.jetbrains.kotlin.util.capitalizeDecapitalize.toUpperCaseAsciiOnly
 import java.net.URI
 
 buildscript {
@@ -11,7 +13,13 @@ plugins {
     `maven-publish`
 }
 
-val forceVersion: String? by project
+class Props {
+    fun String.toUpperSnakeCase() = this.replace("([a-z])([A-Z])".toRegex(), "$1_$2").toUpperCaseAsciiOnly()
+    operator fun getValue(self: Any?, prop: kotlin.reflect.KProperty<*>): String? =
+            project.findProperty(prop.name)?.toString() ?: System.getenv(prop.name.toUpperSnakeCase())
+}
+
+val forceVersion by Props()
 
 project.group = "ru.spbstu"
 project.version = forceVersion ?: "0.0.1.0"
@@ -22,10 +30,22 @@ repositories {
 }
 
 kotlin {
-    jvm()
+    jvm {
+        compilations.all {
+            kotlinOptions.apply {
+                jvmTarget = "1.6"
+            }
+        }
+    }
     js {
         nodejs()
-        browser()
+        browser {
+            testTask {
+                useKarma {
+                    usePhantomJS()
+                }
+            }
+        }
     }
 
     sourceSets {
@@ -76,21 +96,19 @@ kotlin {
     }
 }
 
-val bintrayOrg: String? by project
-val bintrayRepo: String? by project
+
+val bintrayOrg by Props()
+val bintrayRepo by Props()
+val bintrayUsername by Props()
+val bintrayPassword by Props()
 
 publishing {
     repositories {
         maven {
             url = URI("https://api.bintray.com/maven/${bintrayOrg}/${bintrayRepo}/${project.name}/;publish=1;override=1")
             credentials {
-                val bintrayUsername: String? by project
-                val bintrayPassword: String? by project
-                val env = System.getenv().withDefault { null }
-                val BINTRAY_USERNAME by env
-                val BINTRAY_PASSWORD by env
-                username = (bintrayUsername ?: BINTRAY_USERNAME)
-                password = (bintrayPassword ?: BINTRAY_PASSWORD)
+                username = bintrayUsername
+                password = bintrayPassword
             }
         }
     }
