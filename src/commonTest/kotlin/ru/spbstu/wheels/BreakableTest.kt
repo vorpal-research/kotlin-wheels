@@ -23,4 +23,31 @@ class BreakableTest {
         assertEquals((1..201).toList(), mut)
 
     }
+
+    @Test
+    fun mapTest() {
+
+        val actual = (0..300).mapOrBreak {
+            if (it % 3 == 0) continue_
+            if (it == 200) break_
+            "$it"
+        }
+
+        assertEquals(
+                (0..300).take(200).filter { it % 3 != 0 }.map { "$it" },
+                actual
+        )
+
+        val actualS = (0..300).asSequence().mapOrBreak {
+            if (it % 3 == 0) continue_
+            if (it == 200) break_
+            "$it"
+        }
+
+        assertEquals(
+                (0..300).take(200).filter { it % 3 != 0 }.map { "$it" },
+                actual.toList()
+        )
+
+    }
 }

@@ -61,3 +61,32 @@ inline fun repeatB(times: Int, body: BreakableContext.(Int) -> Unit) {
         }
     }
 }
+
+inline fun <T, U, C: MutableCollection<U>> Iterable<T>.mapOrBreakTo(to: C, body: BreakableContext.(T) -> U): C {
+    BreakableContext.loop {
+        forEach {
+            iteration { to.add(body(it)) }
+        }
+    }
+    return to
+}
+
+inline fun <T, U> Iterable<T>.mapOrBreak(body: BreakableContext.(T) -> U): List<U> =
+        mapOrBreakTo(mutableListOf(), body)
+
+inline fun <T, U, C: MutableCollection<U>> Sequence<T>.mapOrBreakTo(to: C, body: BreakableContext.(T) -> U): C {
+    BreakableContext.loop {
+        forEach {
+            iteration { to.add(body(it)) }
+        }
+    }
+    return to
+}
+
+inline fun <T, U> Sequence<T>.mapOrBreak(crossinline body: BreakableContext.(T) -> U): Sequence<U> = sequence {
+    BreakableContext.loop {
+        forEach {
+            iteration { yield(body(it)) }
+        }
+    }
+}
