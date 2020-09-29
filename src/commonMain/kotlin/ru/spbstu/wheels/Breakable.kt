@@ -4,8 +4,8 @@ object Break : NoStackThrowable("break")
 object Continue : NoStackThrowable("continue")
 
 object BreakableContext {
-    val break_: Nothing get() = throw Break
-    val continue_: Nothing get() = throw Continue
+    inline val break_: Nothing get() = throw Break
+    inline val continue_: Nothing get() = throw Continue
 
     inline fun <T> iteration(body: BreakableContext.() -> T): T? =
             try {
@@ -87,6 +87,35 @@ inline fun <T, U> Sequence<T>.mapOrBreak(crossinline body: BreakableContext.(T) 
     BreakableContext.loop {
         forEach {
             iteration { yield(body(it)) }
+        }
+    }
+}
+
+inline fun <T, U, C: MutableCollection<U>> Iterable<T>.mapIndexedOrBreakTo(to: C, body: BreakableContext.(Int, T) -> U): C {
+    BreakableContext.loop {
+        forEachIndexed { i, it ->
+            iteration { to.add(body(i, it)) }
+        }
+    }
+    return to
+}
+
+inline fun <T, U> Iterable<T>.mapIndexedOrBreak(body: BreakableContext.(Int, T) -> U): List<U> =
+        mapIndexedOrBreakTo(mutableListOf(), body)
+
+inline fun <T, U, C: MutableCollection<U>> Sequence<T>.mapIndexedOrBreakTo(to: C, body: BreakableContext.(Int, T) -> U): C {
+    BreakableContext.loop {
+        forEachIndexed { i, it ->
+            iteration { to.add(body(i, it)) }
+        }
+    }
+    return to
+}
+
+inline fun <T, U> Sequence<T>.mapIndexedOrBreak(crossinline body: BreakableContext.(Int, T) -> U): Sequence<U> = sequence {
+    BreakableContext.loop {
+        forEachIndexed { i, it ->
+            iteration { yield(body(i, it)) }
         }
     }
 }
