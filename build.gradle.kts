@@ -79,8 +79,8 @@ kotlin {
             dependsOn(commonTest)
             dependsOn(jvmMain)
             dependencies {
-                implementation(kotlin("test"))
-                implementation(kotlin("test-testng"))
+                api("org.jetbrains.kotlin:kotlin-test-junit")
+                implementation("com.google.guava:guava-testlib:18.0")
             }
         }
         val jsMain by getting {
