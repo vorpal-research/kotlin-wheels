@@ -47,6 +47,7 @@ kotlin {
             }
         }
     }
+    linuxX64()
 
     sourceSets {
         all {
