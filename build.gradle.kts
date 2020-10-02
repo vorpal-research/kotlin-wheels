@@ -94,6 +94,12 @@ kotlin {
                 api(kotlin("test-js"))
             }
         }
+        val linuxX64Main by getting {
+            dependsOn(commonMain)
+        }
+        val linuxX64Test by getting {
+            dependsOn(linuxX64Main)
+        }
     }
 }
 
