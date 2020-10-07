@@ -2,6 +2,8 @@ package ru.spbstu.wheels
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class TArrayTest {
     @Test
@@ -76,5 +78,19 @@ class TArrayTest {
 
         val oneElement = TArray(1) { 42 }
         assertEquals("[42]", "$oneElement")
+    }
+
+    @Test
+    fun plus() {
+        run {
+            val l = tarrayOf<Int>()
+            val r = tarrayOf(1, 2, 3, 4)
+            assertFalse { l.contentEquals(r) }
+            assertTrue { r.contentEquals(r.copyOf()) }
+            assertTrue { tarrayOf(1, 2, 3, 4).contentEquals(l + r) }
+            assertTrue { tarrayOf(1, 2, 3, 4).contentEquals(r + l) }
+            assertTrue { tarrayOf(1, 2, 3, 4, 1, 2, 3, 4).contentEquals(r + r) }
+        }
+
     }
 }
