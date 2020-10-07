@@ -59,6 +59,7 @@ internal constructor(@PublishedApi internal val inner: Array<Any?>): Collection<
     override fun isEmpty(): Boolean = size == 0
 }
 
+
 inline fun <T> TArray(size: Int, init: (Int) -> T): TArray<T> {
     val res = TArray<T>(size)
     for(i in 0 until size) res[i] = init(i)
@@ -94,6 +95,53 @@ inline operator fun <T> TArray<T>.plus(rhv: TArray<T>): TArray<T> {
     rhv.copyInto(res, destinationOffset = this.size)
     return res
 }
+
+inline fun <T, A : Appendable> TArray<out T>.joinTo(
+        buffer: A,
+        separator: CharSequence = ", ",
+        prefix: CharSequence = "",
+        postfix: CharSequence = "",
+        limit: Int = -1,
+        truncated: CharSequence = "...",
+        transform: ((T?) -> CharSequence)): A {
+    buffer.append(prefix)
+    var count = 0
+    for (i in 0 until size) {
+        val element = get(i)
+        if (++count > 1) buffer.append(separator)
+        if (limit < 0 || count <= limit) {
+            buffer.append(transform(element))
+        } else break
+    }
+    if (limit >= 0 && count > limit) buffer.append(truncated)
+    buffer.append(postfix)
+    return buffer
+}
+
+fun <T, A : Appendable> TArray<out T>.joinTo(
+        buffer: A,
+        separator: CharSequence = ", ",
+        prefix: CharSequence = "",
+        postfix: CharSequence = "",
+        limit: Int = -1,
+        truncated: CharSequence = "..."): A = joinTo(buffer, separator, prefix, postfix, limit, truncated) { "$it" }
+
+inline fun <T> TArray<out T>.joinToString(
+        separator: CharSequence = ", ",
+        prefix: CharSequence = "",
+        postfix: CharSequence = "",
+        limit: Int = -1,
+        truncated: CharSequence = "...",
+        transform: (T?) -> CharSequence
+): String = joinTo(StringBuilder(), separator, prefix, postfix, limit, truncated, transform).toString()
+
+inline fun <T> TArray<out T>.joinToString(
+        separator: CharSequence = ", ",
+        prefix: CharSequence = "",
+        postfix: CharSequence = "",
+        limit: Int = -1,
+        truncated: CharSequence = "..."
+): String = joinTo(StringBuilder(), separator, prefix, postfix, limit, truncated).toString()
 
 @Suppress(Warnings.UNCHECKED_CAST, Warnings.NOTHING_TO_INLINE)
 inline fun <T> TArray<out T>.asList(): List<T?> = inner.asList() as List<T?>
