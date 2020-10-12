@@ -3,6 +3,7 @@
 package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
+import kotlin.reflect.KClass
 
 /*
 * Essentially, your good ol' array as you know it, but T is not reified.
@@ -38,14 +39,7 @@ internal constructor(@PublishedApi internal val inner: Array<Any?>): Collection<
         override fun next(): T? = inner[index].also { ++index } as T?
     }
 
-    override fun toString(): String {
-        if(size == 0) return "[]"
-        val sb = StringBuilder("[")
-        sb.append(get(0))
-        for(i in 1 until size) sb.append(", ").append(get(i))
-        sb.append("]")
-        return "$sb"
-    }
+    override fun toString(): String = joinToString(prefix = "[", postfix = "]")
 
     override fun contains(element: T?): Boolean {
         for (i in 0 until size)
@@ -69,19 +63,19 @@ inline fun <T> TArray(size: Int, init: (Int) -> T): TArray<T> {
 @Suppress(Warnings.DEPRECATION, Warnings.UNCHECKED_CAST)
 fun <T> tarrayOf(vararg values: T): TArray<T> = TArray(values as Array<Any?>)
 
-inline operator fun <T> TArray<T>.component1() = get(0)
-inline operator fun <T> TArray<T>.component2() = get(1)
-inline operator fun <T> TArray<T>.component3() = get(2)
-inline operator fun <T> TArray<T>.component4() = get(3)
-inline operator fun <T> TArray<T>.component5() = get(4)
+inline operator fun <T> TArray<out T>.component1() = get(0)
+inline operator fun <T> TArray<out T>.component2() = get(1)
+inline operator fun <T> TArray<out T>.component3() = get(2)
+inline operator fun <T> TArray<out T>.component4() = get(3)
+inline operator fun <T> TArray<out T>.component5() = get(4)
 
-inline fun <T> TArray<T>.elementAt(index: Int): T? = get(index)
-inline fun <T> TArray<T>.elementAtOrElse(index: Int, body: (Int) -> T): T = when {
+inline fun <T> TArray<out T>.elementAt(index: Int): T? = get(index)
+inline fun <T> TArray<out T>.elementAtOrElse(index: Int, body: (Int) -> T): T = when {
     index < size -> get(index) ?: body(index)
     else -> body(index)
 }
 
-inline fun <T> TArray<T>.contentEquals(that: TArray<T>): Boolean {
+inline fun <T> TArray<out T>.contentEquals(that: TArray<T>): Boolean {
     if (this.size != that.size) return false
     for (i in 0 until this.size) {
         if (this[i] != that[i]) return false
@@ -89,7 +83,7 @@ inline fun <T> TArray<T>.contentEquals(that: TArray<T>): Boolean {
     return true
 }
 
-inline operator fun <T> TArray<T>.plus(rhv: TArray<T>): TArray<T> {
+inline operator fun <T> TArray<out T>.plus(rhv: TArray<out T>): TArray<T> {
     val res = TArray<T>(this.size + rhv.size)
     this.copyInto(res)
     rhv.copyInto(res, destinationOffset = this.size)
