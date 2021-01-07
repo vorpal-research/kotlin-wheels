@@ -27,8 +27,8 @@ class TryTest {
     @Test
     fun get() {
 
-        val ex = tryEx { (null as Int?)!! }
-        val ok = tryEx { "${2}" }
+        val ex: Try<Int> = tryEx { (null as Int?)!! }
+        val ok: Try<String> = tryEx { "${2}" }
 
         assertEquals(null, ex.getOrNull())
         assertEquals("2", ok.getOrNull())
@@ -42,7 +42,7 @@ class TryTest {
         assertEquals(null, ok.getExceptionOrNull())
 
         assertEquals("2", ok.getOrElse { "3" })
-        assertEquals("3", ex.getOrElse { "3" })
+        assertEquals(3, ex.getOrElse { 3 })
 
     }
 

@@ -262,32 +262,71 @@ inline fun <reified T> T.defaultHashCode(
 ): Int = hashCombine(prop1(this), prop2(this), prop3(this), prop4(this), prop5(this))
 
 inline fun <reified T> T.defaultHashCode(vararg props: (T) -> Any?): Int {
-    var hash = 1
-    for(prop in props) hash = hash * 31 + prop(this).hashCode()
-    return hash
+    if (props.isEmpty()) return 0
+    var result = props[0](this).hashCode()
+    for(i in 1..props.lastIndex) result = 31 * result + props[i](this).hashCode()
+    return result
 }
 
-inline fun <reified T, A1: Comparable<A1>> T.defaultCompareTo(that: T, prop1: (T) -> A1): Int {
+inline fun <reified T> T.defaultHashCode(
+        prop1: () -> Any?
+): Int =
+        prop1().hashCode()
+
+inline fun <reified T> T.defaultHashCode(
+        prop1: () -> Any?,
+        prop2: () -> Any?
+): Int = hashCombine(prop1(), prop2())
+
+inline fun <reified T> T.defaultHashCode(
+        prop1: () -> Any?,
+        prop2: () -> Any?,
+        prop3: () -> Any?
+): Int = hashCombine(prop1(), prop2(), prop3())
+
+inline fun <reified T> T.defaultHashCode(
+        prop1: () -> Any?,
+        prop2: () -> Any?,
+        prop3: () -> Any?,
+        prop4: () -> Any?
+): Int = hashCombine(prop1(), prop2(), prop3(), prop4())
+
+inline fun <reified T> T.defaultHashCode(
+        prop1: () -> Any?,
+        prop2: () -> Any?,
+        prop3: () -> Any?,
+        prop4: () -> Any?,
+        prop5: () -> Any?
+): Int = hashCombine(prop1(), prop2(), prop3(), prop4(), prop5())
+
+inline fun <reified T> T.defaultHashCode(vararg props: () -> Any?): Int {
+    if (props.isEmpty()) return 0
+    var result = props[0]().hashCode()
+    for(i in 1..props.lastIndex) result = 31 * result + props[i]().hashCode()
+    return result
+}
+
+inline fun <reified T, A1 : Comparable<A1>> T.defaultCompareTo(that: T, prop1: (T) -> A1): Int {
     return prop1(this).compareTo(prop1(that))
 }
 
 inline fun <reified T,
-        A1: Comparable<A1>,
-        A2: Comparable<A2>
+        A1 : Comparable<A1>,
+        A2 : Comparable<A2>
         > T.defaultCompareTo(
         that: T,
         prop1: (T) -> A1,
         prop2: (T) -> A2
 ): Int {
     val r1 = prop1(this).compareTo(prop1(that))
-    if(r1 != 0) return r1
+    if (r1 != 0) return r1
     return prop2(this).compareTo(prop2(that))
 }
 
 inline fun <reified T,
-        A1: Comparable<A1>,
-        A2: Comparable<A2>,
-        A3: Comparable<A3>
+        A1 : Comparable<A1>,
+        A2 : Comparable<A2>,
+        A3 : Comparable<A3>
         > T.defaultCompareTo(
         that: T,
         prop1: (T) -> A1,
@@ -295,17 +334,17 @@ inline fun <reified T,
         prop3: (T) -> A3
 ): Int {
     val r1 = prop1(this).compareTo(prop1(that))
-    if(r1 != 0) return r1
+    if (r1 != 0) return r1
     val r2 = prop2(this).compareTo(prop2(that))
-    if(r2 != 0) return r2
+    if (r2 != 0) return r2
     return prop3(this).compareTo(prop3(that))
 }
 
 inline fun <reified T,
-        A1: Comparable<A1>,
-        A2: Comparable<A2>,
-        A3: Comparable<A3>,
-        A4: Comparable<A4>
+        A1 : Comparable<A1>,
+        A2 : Comparable<A2>,
+        A3 : Comparable<A3>,
+        A4 : Comparable<A4>
         > T.defaultCompareTo(
         that: T,
         prop1: (T) -> A1,
@@ -314,20 +353,20 @@ inline fun <reified T,
         prop4: (T) -> A4
 ): Int {
     val r1 = prop1(this).compareTo(prop1(that))
-    if(r1 != 0) return r1
+    if (r1 != 0) return r1
     val r2 = prop2(this).compareTo(prop2(that))
-    if(r2 != 0) return r2
+    if (r2 != 0) return r2
     val r3 = prop3(this).compareTo(prop3(that))
-    if(r3 != 0) return r3
+    if (r3 != 0) return r3
     return prop4(this).compareTo(prop4(that))
 }
 
 inline fun <reified T,
-        A1: Comparable<A1>,
-        A2: Comparable<A2>,
-        A3: Comparable<A3>,
-        A4: Comparable<A4>,
-        A5: Comparable<A5>
+        A1 : Comparable<A1>,
+        A2 : Comparable<A2>,
+        A3 : Comparable<A3>,
+        A4 : Comparable<A4>,
+        A5 : Comparable<A5>
         > T.defaultCompareTo(
         that: T,
         prop1: (T) -> A1,
@@ -337,27 +376,27 @@ inline fun <reified T,
         prop5: (T) -> A5
 ): Int {
     val r1 = prop1(this).compareTo(prop1(that))
-    if(r1 != 0) return r1
+    if (r1 != 0) return r1
     val r2 = prop2(this).compareTo(prop2(that))
-    if(r2 != 0) return r2
+    if (r2 != 0) return r2
     val r3 = prop3(this).compareTo(prop3(that))
-    if(r3 != 0) return r3
+    if (r3 != 0) return r3
     val r4 = prop4(this).compareTo(prop4(that))
-    if(r4 != 0) return r4
+    if (r4 != 0) return r4
     return prop5(this).compareTo(prop5(that))
 }
 
 inline fun <reified T> T.defaultCompareTo(that: T, vararg props: (T) -> Comparable<*>): Int {
-    for(prop in props) {
+    for (prop in props) {
         @Suppress(Warnings.UNCHECKED_CAST)
         val prop0 = prop as (T) -> Comparable<Any?>
         val res = prop0(this).compareTo(prop0(that))
-        if(res != 0) return res
+        if (res != 0) return res
     }
     return 0
 }
 
-interface Copyable<T: Copyable<T>> {
+interface Copyable<T : Copyable<T>> {
     fun copy(): T
 }
 
@@ -396,11 +435,39 @@ inline fun <T, A1, A2, A3, A4, A5> T.defaultCopy(
         prop5: (T) -> A5
 ): T = constructor(prop1(this), prop2(this), prop3(this), prop4(this), prop5(this))
 
-data class Data(val s: String, val i: Int): Comparable<Data> {
-    override fun toString(): String = "Data" + toTupleString(Data::s, Data::i, prefix = "{", postfix = "}")
-    override fun equals(other: Any?): Boolean = defaultEquals(other, Data::s, Data::i)
-    override fun hashCode(): Int = defaultHashCode(Data::s, Data::i)
-    override fun compareTo(other: Data): Int = defaultCompareTo(other, Data::s, Data::i)
 
-    fun copy() = defaultCopy(::Data, Data::s, Data::i)
-}
+inline fun <T, A1> T.defaultCopy(
+        constructor: (A1) -> T,
+        prop1: () -> A1
+): T = constructor(prop1())
+
+inline fun <T, A1, A2> T.defaultCopy(
+        constructor: (A1, A2) -> T,
+        prop1: () -> A1,
+        prop2: () -> A2
+): T = constructor(prop1(), prop2())
+
+inline fun <T, A1, A2, A3> T.defaultCopy(
+        constructor: (A1, A2, A3) -> T,
+        prop1: () -> A1,
+        prop2: () -> A2,
+        prop3: () -> A3
+): T = constructor(prop1(), prop2(), prop3())
+
+inline fun <T, A1, A2, A3, A4> T.defaultCopy(
+        constructor: (A1, A2, A3, A4) -> T,
+        prop1: () -> A1,
+        prop2: () -> A2,
+        prop3: () -> A3,
+        prop4: () -> A4
+): T = constructor(prop1(), prop2(), prop3(), prop4())
+
+inline fun <T, A1, A2, A3, A4, A5> T.defaultCopy(
+        constructor: (A1, A2, A3, A4, A5) -> T,
+        prop1: () -> A1,
+        prop2: () -> A2,
+        prop3: () -> A3,
+        prop4: () -> A4,
+        prop5: () -> A5
+): T = constructor(prop1(), prop2(), prop3(), prop4(), prop5())
+
