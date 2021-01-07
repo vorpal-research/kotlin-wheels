@@ -21,7 +21,7 @@ inline operator fun PositiveInfinity.unaryPlus() = PositiveInfinity
 @Suppress(Warnings.NOTHING_TO_INLINE)
 inline operator fun NegativeInfinity.unaryPlus() = NegativeInfinity
 
-val Inf = PositiveInfinity
+val Inf get() = PositiveInfinity
 
 operator fun NegativeInfinity.rangeTo(inf: PositiveInfinity) = UniversalRange
 

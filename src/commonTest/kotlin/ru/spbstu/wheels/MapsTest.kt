@@ -8,8 +8,10 @@ class MapsTest {
     fun simpleEntry() {
         val map = ('a'..'z').withIndex().map { (i, c) -> "$c" to i }.toMap()
 
-        assertTrue(SimpleEntry("h", 7) in map.entries)
-        assertFalse(SimpleEntry("a", 5) in map.entries)
+        // contains for map.entries works weirdly on native, see
+        // https://youtrack.jetbrains.com/issue/KT-42428
+        assertTrue(SimpleEntry("h", 7) in map.entries.toSet())
+        assertFalse(SimpleEntry("a", 5) in map.entries.toSet())
 
         val actualEntry = map.entries.find { it.key == "h" }
         val ourEntry = SimpleEntry("h", 7)
