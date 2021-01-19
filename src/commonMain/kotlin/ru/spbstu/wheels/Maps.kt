@@ -14,15 +14,27 @@ data class SimpleEntry<out K, out V>(override val key: K, override val value: V)
 }
 
 @Suppress(Warnings.UNCHECKED_CAST)
-fun <K, V> Map<K, V>.getEntry(key: K): Map.Entry<K, V>? = when (key) {
-    in this -> SimpleEntry(key, get(key) as V) // not !! because V may be nullable
-    else -> null
+fun <K, V> Map<K, V>.getEntry(key: K): Map.Entry<K, V>? {
+    val v = get(key)
+    return when {
+        v != null || key in this -> SimpleEntry(key, v as V)
+        else -> null
+    }
 }
 
 @Suppress(Warnings.UNCHECKED_CAST)
-fun <K, V> Map<K, V>.getOption(key: K): Option<V> = when (key) {
-    in this -> Option.just(get(key) as V) // not !! because V may be nullable
-    else -> Option.empty()
+@JvmName("getOptionNonNullable")
+fun <K, V: Any> Map<K, V>.getOption(key: K): Option<V> {
+    return Option.ofNullable(this[key])
+}
+
+@Suppress(Warnings.UNCHECKED_CAST)
+fun <K, V> Map<K, V>.getOption(key: K): Option<V> {
+    val v = get(key)
+    return when {
+        v != null || key in this -> Option.just(v as V)
+        else -> Option.empty()
+    }
 }
 
 fun <K, V, M : MutableMap<K, V>> Iterable<Map.Entry<K, V>>.toMap(m: M): M =
