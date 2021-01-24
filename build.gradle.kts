@@ -2,14 +2,9 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmCompilation
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toUpperCaseAsciiOnly
 import java.net.URI
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-}
-
 plugins {
     id("org.jetbrains.kotlin.multiplatform").version("1.4.10")
+    id("kotlinx.benchmark").version("0.2.0-dev-20")
     `maven-publish`
 }
 
@@ -26,6 +21,7 @@ project.version = forceVersion ?: "0.0.1.0"
 
 repositories {
     maven(url = "https://dl.bintray.com/vorpal-research/kotlin-maven")
+    maven(url = "https://dl.bintray.com/kotlin/kotlinx" )
     jcenter()
 }
 
@@ -64,6 +60,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("ru.spbstu:kotlinx-warnings:1.4.10")
+                implementation("org.jetbrains.kotlinx:kotlinx.benchmark.runtime:0.2.0-dev-20")
             }
         }
         val commonTest by getting {
@@ -103,6 +100,18 @@ kotlin {
     }
 }
 
+benchmark {
+    configurations {
+        named("main") {
+            iterations = 20
+        }
+    }
+    targets {
+        register("jvm")
+        register("js")
+        register("linuxX64")
+    }
+}
 
 val bintrayOrg by Props()
 val bintrayRepo by Props()
