@@ -174,3 +174,21 @@ inline fun <reified T> Sequence<*>.firstInstance(): T? {
     for(e in this) if(e is T) return e
     return null
 }
+
+inline fun <T> Sequence<T>.allIndexed(body: (Int, T) -> Boolean): Boolean {
+    var ix = 0
+    for (e in this) {
+        if (!body(ix, e)) return false
+        ++ix
+    }
+    return true
+}
+
+inline fun <T> Sequence<T>.anyIndexed(body: (Int, T) -> Boolean): Boolean {
+    var ix = 0
+    for (e in this) {
+        if (body(ix, e)) return true
+        ++ix
+    }
+    return false
+}

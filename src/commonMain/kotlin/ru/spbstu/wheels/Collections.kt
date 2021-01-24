@@ -101,3 +101,21 @@ infix fun <T> Iterable<T>.identityEquals(that: Iterable<T>): Boolean {
     }
     return true
 }
+
+inline fun <T> Iterable<T>.allIndexed(body: (Int, T) -> Boolean): Boolean {
+    var ix = 0
+    for (e in this) {
+        if (!body(ix, e)) return false
+        ++ix
+    }
+    return true
+}
+
+inline fun <T> Iterable<T>.anyIndexed(body: (Int, T) -> Boolean): Boolean {
+    var ix = 0
+    for (e in this) {
+        if (body(ix, e)) return true
+        ++ix
+    }
+    return false
+}
