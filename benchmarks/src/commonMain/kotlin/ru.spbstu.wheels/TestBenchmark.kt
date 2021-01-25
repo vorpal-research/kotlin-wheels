@@ -1,7 +1,6 @@
-package benchmarks
+package ru.spbstu.wheels
 
 import kotlinx.benchmark.*
-import ru.spbstu.wheels.forEachB
 
 @State(Scope.Benchmark)
 @Warmup(10)

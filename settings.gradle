@@ -5,4 +5,9 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'kotlin-wheels'
+rootProject.name = 'Kotlin-wheels'
+include(':core')
+project(':core').name = 'kotlin-wheels'
+
+include(':benchmarks')
+
