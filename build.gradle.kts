@@ -22,7 +22,7 @@ class Props {
 val forceVersion by Props()
 
 project.group = "ru.spbstu"
-project.version = forceVersion ?: "0.0.1.0"
+project.version = forceVersion ?: "0.0.1.1"
 
 repositories {
     maven {
