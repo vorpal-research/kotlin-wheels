@@ -9,7 +9,7 @@ buildscript {
 }
 
 plugins {
-    id("org.jetbrains.kotlin.multiplatform").version("1.4.10")
+    id("org.jetbrains.kotlin.multiplatform").version("1.4.31")
     `maven-publish`
 }
 
@@ -25,7 +25,16 @@ project.group = "ru.spbstu"
 project.version = forceVersion ?: "0.0.1.0"
 
 repositories {
-    maven(url = "https://dl.bintray.com/vorpal-research/kotlin-maven")
+    maven {
+        url = URI("https://maven.pkg.github.com/vorpal-research/kotlin-maven")
+        credentials {
+            username = "vorpal-reseacher"
+            password = "\u0031\u0030\u0062\u0037\u0064\u0066\u0031\u0032\u0063\u0064" +
+                    "\u0035\u0034\u0038\u0037\u0034\u0065\u0030\u0034\u0035\u0035" +
+                    "\u0038\u0031\u0063\u0039\u0039\u0062\u0031\u0066\u0032\u0030" +
+                    "\u0038\u0065\u0031\u0061\u0035\u0033\u0065\u0036\u0032\u0038"
+        }
+    }
     jcenter()
 }
 
@@ -63,7 +72,7 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                implementation("ru.spbstu:kotlinx-warnings:1.4.10")
+                implementation("ru.spbstu:kotlinx-warnings:1.4.31")
             }
         }
         val commonTest by getting {
@@ -104,18 +113,16 @@ kotlin {
 }
 
 
-val bintrayOrg by Props()
-val bintrayRepo by Props()
-val bintrayUsername by Props()
-val bintrayPassword by Props()
+val deployUsername by Props()
+val deployPassword by Props()
 
 publishing {
     repositories {
         maven {
-            url = URI("https://api.bintray.com/maven/${bintrayOrg}/${bintrayRepo}/${project.name}/;publish=1;override=1")
+            url = URI("https://maven.pkg.github.com/vorpal-research/kotlin-maven")
             credentials {
-                username = bintrayUsername
-                password = bintrayPassword
+                username = deployUsername
+                password = deployPassword
             }
         }
     }

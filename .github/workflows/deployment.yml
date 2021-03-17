@@ -18,7 +18,7 @@ jobs:
     - name: Deploy to Bintray
       id: deploy-to-bintray
       run: |
-        gradle -PbintrayOrg=vorpal-research -PbintrayRepo=kotlin-maven -PforceVersion=${{ github.event.release.tag_name }} publish || echo "deploy failed" >&2
+        gradle -PforceVersion=${{ github.event.release.tag_name }} publish || echo "deploy failed" >&2
       env:
-        BINTRAY_USERNAME: ${{ secrets.bintray_username }}
-        BINTRAY_PASSWORD: ${{ secrets.bintray_password }}
+        DEPLOY_USERNAME: vorpal-reseacher
+        DEPLOY_PASSWORD: ${{ secrets.ORG_GITHUB_TOKEN }}
