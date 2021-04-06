@@ -1,5 +1,6 @@
 package ru.spbstu.wheels
 
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -93,4 +94,21 @@ class TArrayTest {
         }
 
     }
+
+    @Test
+    fun sort() {
+        val rand = Random(42)
+        val tarr: TArray<Int> = TArray(200) { rand.nextInt(1000) }
+        val lst = tarr.toMutableList()
+        lst.sortBy { it }
+        tarr.sort()
+
+        assertEquals(lst, tarr.asList())
+
+        lst.sortByDescending { it }
+        tarr.sortWith(compareBy<Int?> { it }.reversed())
+        assertEquals(lst, tarr.asList())
+    }
+
+
 }

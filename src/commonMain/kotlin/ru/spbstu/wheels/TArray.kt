@@ -33,7 +33,7 @@ internal constructor(@PublishedApi internal val inner: Array<Any?>): Collection<
     @Suppress(Warnings.OVERRIDE_BY_INLINE)
     override inline operator fun iterator(): Iterator<T?> = object: Iterator<T?> {
         private var index: Int = 0
-        override fun hasNext(): Boolean = index < inner.lastIndex
+        override fun hasNext(): Boolean = index <= inner.lastIndex
 
         @Suppress(Warnings.UNCHECKED_CAST)
         override fun next(): T? = inner[index].also { ++index } as T?
@@ -53,6 +53,8 @@ internal constructor(@PublishedApi internal val inner: Array<Any?>): Collection<
     override fun isEmpty(): Boolean = size == 0
 }
 
+private inline val <T> TArray<T>.typedInner: Array<T?>
+    get() = uncheckedCast<Array<T?>>(inner)
 
 inline fun <T> TArray(size: Int, init: (Int) -> T): TArray<T> {
     val res = TArray<T>(size)
@@ -161,14 +163,12 @@ inline fun <T> TArray<T>.fill(element: T, fromIndex: Int = 0, toIndex: Int = siz
     inner.fill(element, fromIndex, toIndex)
 }
 
-inline fun <T : Comparable<T>> TArray<T>.sort() {
-    @Suppress(Warnings.UNCHECKED_CAST)
-    inner.sortBy { it as Comparable<Any> }
+fun <T : Comparable<T>> TArray<T>.sort() {
+    typedInner.sortBy { it }
 }
 
-inline fun <T> TArray<T>.sortWith(cmp: Comparator<T?>) {
-    @Suppress(Warnings.UNCHECKED_CAST)
-    inner.sortWith(Comparator { a, b -> cmp.compare(a as T?, b as T?) })
+fun <T> TArray<T>.sortWith(cmp: Comparator<T?>) {
+    typedInner.sortWith(cmp)
 }
 
 fun <T> Collection<T>.toTArray(): TArray<T> {
