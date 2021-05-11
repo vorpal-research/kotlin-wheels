@@ -51,3 +51,5 @@ fun Product.productIterator() = object: Iterator<Any?> {
 
     override fun next(): Any? = componentAt(index++).requireNotLast("ProductIterator.next()")
 }
+
+fun Product.productSequence(): Sequence<Any?> = Sequence { productIterator() }
