@@ -25,16 +25,7 @@ project.group = "ru.spbstu"
 project.version = forceVersion ?: "0.0.1.1"
 
 repositories {
-    maven {
-        url = URI("https://maven.pkg.github.com/vorpal-research/kotlin-maven")
-        credentials {
-            username = "vorpal-reseacher"
-            password = "\u0031\u0030\u0062\u0037\u0064\u0066\u0031\u0032\u0063\u0064" +
-                    "\u0035\u0034\u0038\u0037\u0034\u0065\u0030\u0034\u0035\u0035" +
-                    "\u0038\u0031\u0063\u0039\u0039\u0062\u0031\u0066\u0032\u0030" +
-                    "\u0038\u0065\u0031\u0061\u0035\u0033\u0065\u0036\u0032\u0038"
-        }
-    }
+    maven("https://maven.vorpal-research.science")
     jcenter()
 }
 
@@ -119,7 +110,7 @@ val deployPassword by Props()
 publishing {
     repositories {
         maven {
-            url = URI("https://maven.pkg.github.com/vorpal-research/kotlin-maven")
+            url = URI("https://maven.vorpal-research.science/publish")
             credentials {
                 username = deployUsername
                 password = deployPassword
