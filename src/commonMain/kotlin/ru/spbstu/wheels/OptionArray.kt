@@ -11,7 +11,6 @@ import kotlinx.warnings.Warnings
 @Suppress(Warnings.UNCHECKED_CAST, Warnings.NOTHING_TO_INLINE)
 inline class OptionArray<T>
 @Deprecated(message = "Do not use")
-@Suppress("NON_PUBLIC_PRIMARY_CONSTRUCTOR_OF_INLINE_CLASS")
 @PublishedApi
 internal constructor(@PublishedApi internal val inner: Array<Any?>) {
 

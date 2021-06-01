@@ -3,7 +3,6 @@ package ru.spbstu.wheels
 import kotlinx.warnings.Warnings
 
 inline class Either<out A, out B>
-@Suppress("NON_PUBLIC_PRIMARY_CONSTRUCTOR_OF_INLINE_CLASS")
 @PublishedApi
 internal constructor(@PublishedApi internal val unsafeValue: Any?) {
     companion object {

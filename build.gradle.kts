@@ -9,7 +9,7 @@ buildscript {
 }
 
 plugins {
-    id("org.jetbrains.kotlin.multiplatform").version("1.4.31")
+    id("org.jetbrains.kotlin.multiplatform").version("1.5.10")
     `maven-publish`
 }
 
@@ -42,7 +42,7 @@ kotlin {
         browser {
             testTask {
                 useKarma {
-                    usePhantomJS()
+                    useFirefoxHeadless()
                 }
             }
         }

@@ -4,7 +4,6 @@ import kotlinx.warnings.Warnings
 import kotlin.reflect.KProperty
 
 inline class Option<out T>
-@Suppress("NON_PUBLIC_PRIMARY_CONSTRUCTOR_OF_INLINE_CLASS")
 @PublishedApi
 internal constructor(@PublishedApi internal val unsafeValue: Any?) {
     companion object {
