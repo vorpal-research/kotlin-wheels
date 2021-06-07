@@ -52,5 +52,14 @@ class ProductTest {
             visitProduct(b)
         }
         assertEquals(listOf(5, 4), binExpLoci)
+
+        val numbers = mutableListOf<Int>()
+        bb.acceptProductVisitor(object: ProductVisitor() {
+            override fun default(any: Any?) {
+                if (any is Int) numbers.add(any)
+            }
+        })
+
+        assertEquals(listOf(32, 2, 4, 8, 5), numbers)
     }
 }
