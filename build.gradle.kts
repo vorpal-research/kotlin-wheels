@@ -4,13 +4,15 @@ import java.net.URI
 
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
 
 plugins {
-    id("org.jetbrains.kotlin.multiplatform").version("1.5.10")
+    kotlin("multiplatform").version("1.5.10")
     `maven-publish`
+    `java-library`
+    jacoco
 }
 
 class Props {
@@ -26,7 +28,7 @@ project.version = forceVersion ?: "0.0.1.1"
 
 repositories {
     maven("https://maven.vorpal-research.science")
-    jcenter()
+    mavenCentral()
 }
 
 kotlin {
@@ -103,6 +105,31 @@ kotlin {
     }
 }
 
+jacoco {
+    toolVersion = "0.8.6"
+}
+
+tasks.jacocoTestReport {
+    val coverageSourceDirs = arrayOf(
+        "src/commonMain",
+        "src/jvmMain"
+    )
+
+    val classFiles = File("${buildDir}/classes/kotlin/jvm/")
+        .walkBottomUp()
+        .toSet()
+
+    classDirectories.setFrom(classFiles)
+    sourceDirectories.setFrom(files(coverageSourceDirs))
+
+    executionData
+        .setFrom(files("${buildDir}/jacoco/jvmTest.exec"))
+
+    reports {
+        xml.isEnabled = true
+        html.isEnabled = true
+    }
+}
 
 val deployUsername by Props()
 val deployPassword by Props()
