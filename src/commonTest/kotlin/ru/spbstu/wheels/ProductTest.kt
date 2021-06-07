@@ -37,4 +37,20 @@ class ProductTest {
             Locus.productSequence().toList()
         )
     }
+
+    @Test
+    fun visitorCheck() {
+        val bb = BinaryExpr(BinaryExpr(Locus, Variable("x", 2), 4), Variable("x", 8), 5)
+
+        val varSet = mutableSetOf<Variable>()
+        bb.acceptProductVisitor { v: Variable -> varSet += v }
+        assertEquals(setOf(Variable("x", 2), Variable("x", 8)), varSet)
+
+        val binExpLoci = mutableListOf<Int>()
+        bb.acceptProductVisitor { b: BinaryExpr ->
+            binExpLoci += b.location
+            visitProduct(b)
+        }
+        assertEquals(listOf(5, 4), binExpLoci)
+    }
 }
