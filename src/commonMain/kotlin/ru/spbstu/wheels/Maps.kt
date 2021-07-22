@@ -118,3 +118,20 @@ fun <A, B, M: MutableMap<A, B>> Iterable<A>.zipTo(that: Iterable<B>, to: M): M {
 
 @Suppress(Warnings.NOTHING_TO_INLINE)
 inline fun <K, V> Map<K, V>.asMap(): Map<K, V> = this
+
+
+inline fun <K, V, C1: MutableMap<K, V>, C2: MutableMap<K, V>> Map<K, V>.partitionTo(
+    c1: C1, c2: C2, body: (K, V) -> Boolean
+): Pair<C1, C2> {
+    for ((k, v) in this) {
+        if (body(k, v)) {
+            c1.put(k, v)
+        } else {
+            c2.put(k, v)
+        }
+    }
+    return Pair(c1, c2)
+}
+
+inline fun <K, V> Map<K, V>.partition(body: (K, V) -> Boolean): Pair<Map<K, V>, Map<K, V>> =
+    partitionTo(mutableMapOf(), mutableMapOf(), body)

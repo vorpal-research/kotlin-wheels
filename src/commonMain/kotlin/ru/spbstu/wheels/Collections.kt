@@ -119,3 +119,16 @@ inline fun <T> Iterable<T>.anyIndexed(body: (Int, T) -> Boolean): Boolean {
     }
     return false
 }
+
+inline fun <T, C1: MutableCollection<T>, C2: MutableCollection<T>> Iterable<T>.partitionTo(
+    c1: C1, c2: C2, body: (T) -> Boolean
+): Pair<C1, C2> {
+    for (e in this) {
+        if (body(e)) {
+            c1.add(e)
+        } else {
+            c2.add(e)
+        }
+    }
+    return Pair(c1, c2)
+}
