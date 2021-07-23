@@ -2,6 +2,7 @@ package ru.spbstu.wheels
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertSame
 
 class CollectionsTest {
     @Test
@@ -59,6 +60,53 @@ class CollectionsTest {
                 (lst1 product lst2).toSet(),
                 (lst2 product lst1).map { (a, b) -> b to a }.toSet()
         )
+
+        run {
+            val l1 = listOf(1, 2, 3)
+            val l2 = listOf(4, 5, 6)
+            val l3 = mutableListOf<Pair<Int, Int>>()
+
+            val l3copy = l1.productTo(l2, l3)
+
+            assertSame(l3, l3copy)
+            assertEquals(
+                listOf(
+                    1 to 4, 1 to 5, 1 to 6,
+                    2 to 4, 2 to 5, 2 to 6,
+                    3 to 4, 3 to 5, 3 to 6
+                ),
+                l3
+            )
+        }
+
+        run {
+            val base = listOf(listOf(1, 2, 3), listOf(4, 5, 6))
+            val p = base.product()
+
+            assertEquals(
+                listOf(
+                    listOf(1, 4), listOf(1, 5), listOf(1, 6),
+                    listOf(2, 4), listOf(2, 5), listOf(2, 6),
+                    listOf(3, 4), listOf(3, 5), listOf(3, 6),
+                ),
+                p
+            )
+        }
+
+        run {
+            val base = listOf(listOf(1, 2), listOf(4, 5), listOf(7, 8))
+            val p = base.product()
+
+            assertEquals(
+                listOf(
+                    listOf(1, 4, 7), listOf(1, 4, 8),
+                    listOf(1, 5, 7), listOf(1, 5, 8),
+                    listOf(2, 4, 7), listOf(2, 4, 8),
+                    listOf(2, 5, 7), listOf(2, 5, 8),
+                ),
+                p
+            )
+        }
     }
 
     @Test

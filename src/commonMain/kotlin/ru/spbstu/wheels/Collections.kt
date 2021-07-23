@@ -18,6 +18,14 @@ inline fun <A, B, R, C: MutableCollection<R>> Iterable<A>.productTo(that: Iterab
 fun <A, B, C: MutableCollection<Pair<A, B>>> Iterable<A>.productTo(that: Iterable<B>, to: C): C =
         productTo(that, to, ::Pair)
 
+fun <T> Iterable<Iterable<T>>.product(): List<List<T>> =
+    fold(mutableListOf(listOf())) { acc, set ->
+        acc.flatMapTo(mutableListOf()) { list: List<T> ->
+            set.map { element -> list + element }
+        }
+    }
+
+
 fun <T> List<T>.firstOption(): Option<T> = when {
     isEmpty() -> Option.empty()
     else -> Option.just(get(0))
