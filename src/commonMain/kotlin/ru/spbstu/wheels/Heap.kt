@@ -107,10 +107,13 @@ class BinaryHeap<T>(override val comparator: Comparator<T>): Heap<T>, AbstractMu
 
     /* Queue implementation */
     override fun put(value: T) { add(value) }
-    override fun take(): T = current?.also { removeAt(0) } ?: throw IllegalArgumentException("Heap is empty")
+    override fun take(): T {
+        require(size != 0) { "Heap is empty" }
+        return uncheckedCast(data[0].also { removeAt(0) })
+    }
     @Suppress(Warnings.UNCHECKED_CAST)
     override val current: T?
-        get() = data[0]
+        get() = runIf(size != 0) { data[0] }
 
     override fun isEmpty(): Boolean = size == 0
 }

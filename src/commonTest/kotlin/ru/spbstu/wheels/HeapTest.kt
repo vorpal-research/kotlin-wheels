@@ -3,8 +3,15 @@ package ru.spbstu.wheels
 import kotlin.test.Test
 import kotlin.random.Random
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class HeapTest {
+
+    @Test
+    fun emptyHeapTest() {
+        val h = heap<Int>()
+        assertEquals(null, h.current)
+    }
 
     @Test
     fun heapSortTest() {
