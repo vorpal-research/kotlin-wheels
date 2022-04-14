@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmCompilation
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toUpperCaseAsciiOnly
 import java.net.URI
@@ -9,7 +10,7 @@ buildscript {
 }
 
 plugins {
-    kotlin("multiplatform").version("1.5.10")
+    kotlin("multiplatform").version("1.6.20")
     `maven-publish`
     `java-library`
     jacoco
@@ -24,7 +25,7 @@ class Props {
 val forceVersion by Props()
 
 project.group = "ru.spbstu"
-project.version = forceVersion ?: "0.0.1.1"
+project.version = forceVersion ?: "0.0.1.4"
 
 repositories {
     maven("https://maven.vorpal-research.science")
@@ -41,22 +42,13 @@ kotlin {
     }
     js {
         nodejs()
-        browser {
-            testTask {
-                useKarma {
-                    useFirefoxHeadless()
-                }
-            }
-        }
+        browser {}
     }
-    linuxX64()
+    //linuxX64()
 
     sourceSets {
         all {
             languageSettings.apply {
-                languageVersion = "1.4"
-                apiVersion = "1.4"
-                enableLanguageFeature("InlineClasses")
                 useExperimentalAnnotation("kotlin.RequiresOptIn")
                 useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
                 useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
@@ -65,7 +57,7 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                implementation("ru.spbstu:kotlinx-warnings:1.4.31")
+                implementation("ru.spbstu:kotlinx-warnings:${getKotlinPluginVersion()}")
             }
         }
         val commonTest by getting {
@@ -96,12 +88,12 @@ kotlin {
                 api(kotlin("test-js"))
             }
         }
-        val linuxX64Main by getting {
-            dependsOn(commonMain)
-        }
-        val linuxX64Test by getting {
-            dependsOn(linuxX64Main)
-        }
+//        val linuxX64Main by getting {
+//            dependsOn(commonMain)
+//        }
+//        val linuxX64Test by getting {
+//            dependsOn(linuxX64Main)
+//        }
     }
 }
 
