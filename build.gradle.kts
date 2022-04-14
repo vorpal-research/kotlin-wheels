@@ -49,9 +49,9 @@ kotlin {
     sourceSets {
         all {
             languageSettings.apply {
-                useExperimentalAnnotation("kotlin.RequiresOptIn")
-                useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
-                useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
+                optIn("kotlin.RequiresOptIn")
+                optIn("kotlin.ExperimentalUnsignedTypes")
+                optIn("kotlin.ExperimentalStdlibApi")
             }
         }
 

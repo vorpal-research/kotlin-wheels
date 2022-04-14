@@ -1,0 +1,132 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform' version "1.5.10"
+    id 'org.jetbrains.kotlin.plugin.allopen' version "1.5.0"
+    id 'org.jetbrains.kotlinx.benchmark' version "0.3.1"
+}
+
+repositories {
+    maven { url "https://maven.vorpal-research.science" }
+    mavenCentral()
+}
+
+// how to apply plugin to a specific source set?
+allOpen {
+    annotation("org.openjdk.jmh.annotations.State")
+}
+
+kotlin {
+    jvm {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = '1.8'
+            }
+        }
+    }
+
+    js {
+        nodejs {
+
+        }
+    }
+
+    sourceSets.all {
+        languageSettings {
+            progressiveMode = true
+            useExperimentalAnnotation("kotlin.Experimental")
+            useExperimentalAnnotation('kotlin.ExperimentalUnsignedTypes')
+        }
+    }
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation 'ru.spbstu:kotlin-wheels'
+                implementation 'org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.3.1'
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-test-common'
+                implementation 'org.jetbrains.kotlin:kotlin-test-annotations-common'
+            }
+        }
+        jvmMain {}
+        jvmTest {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-test'
+                implementation 'org.jetbrains.kotlin:kotlin-test-junit'
+            }
+        }
+        jsMain {}
+        jsTest {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-test-js'
+            }
+        }
+
+        nativeMain {
+            dependsOn commonMain
+            dependencies {
+            }
+        }
+    }
+}
+
+// Configure benchmark
+benchmark {
+    configurations {
+        main { // --> jvmBenchmark/jsBenchmark + benchmark
+            iterations = 5 // number of iterations
+            iterationTime = 300
+            iterationTimeUnit = "ms"
+            advanced("forks", 3)
+        }
+
+        params {
+            iterations = 5 // number of iterations
+            iterationTime = 300
+            iterationTimeUnit = "ms"
+            include("ParamBenchmark")
+            param("data", 5, 1, 8)
+            param("unused", 6, 9)
+        }
+
+        fast { // --> jvmFastBenchmark
+            include("Common")
+            exclude("long")
+            iterations = 1
+            iterationTime = 300 // time in ms per iteration
+            iterationTimeUnit = "ms" // time in ms per iteration
+            advanced("forks", 1)
+        }
+
+        csv {
+            include("Common")
+            exclude("long")
+            iterations = 1
+            iterationTime = 300
+            iterationTimeUnit = "ms"
+            reportFormat = "csv" // csv report format
+        }
+    }
+
+    // Setup configurations
+    targets {
+        // This one matches compilation base name, e.g. 'jvm', 'jvmTest', etc
+        register("jvm") {
+            jmhVersion = "1.21"
+        }
+        register("js")
+        register("native")
+        register("macosX64")
+        register("linuxX64")
+        register("mingwX64")
+    }
+}
+
