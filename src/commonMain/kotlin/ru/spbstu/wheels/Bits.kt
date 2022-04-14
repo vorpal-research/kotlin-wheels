@@ -1,5 +1,4 @@
 @file: Suppress(Warnings.NOTHING_TO_INLINE)
-@file: OptIn(ExperimentalStdlibApi::class, ExperimentalUnsignedTypes::class)
 
 package ru.spbstu.wheels
 
@@ -23,7 +22,6 @@ fun IntBits.Companion.fromString(s: String): IntBits = IntBits(s.toUInt(2).toInt
 @PublishedApi
 internal expect fun Int.reverseBits(): Int
 
-@OptIn(ExperimentalStdlibApi::class)
 inline class IntBits
 constructor(val data: Int) {
     companion object {}

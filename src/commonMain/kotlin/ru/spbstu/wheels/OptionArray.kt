@@ -4,17 +4,20 @@ package ru.spbstu.wheels
 
 import kotlinx.warnings.Warnings
 
+@RequiresOptIn()
+private annotation class OptionArrayInaccessible
+
 /*
 * Essentially, your good ol' array as you know it, but T is not reified.
 * Is needed to avoid dealing with Array<Any?> when implementing array-based data structures.
 * */
 @Suppress(Warnings.UNCHECKED_CAST, Warnings.NOTHING_TO_INLINE)
 inline class OptionArray<T>
-@Deprecated(message = "Do not use")
+@OptionArrayInaccessible
 @PublishedApi
 internal constructor(@PublishedApi internal val inner: Array<Any?>) {
 
-    @Suppress("DEPRECATION")
+    @OptIn(OptionArrayInaccessible::class)
     constructor(size: Int) : this(Array<Any?>(size) { Option.NOVALUE })
 
 //    @Suppress("DEPRECATION")
@@ -56,13 +59,13 @@ inline fun <T> OptionArray<out T>.copyInto(destination: OptionArray<T>,
     inner.copyInto(destination.inner, destinationOffset, startIndex, endIndex)
 }
 
-@Suppress(Warnings.DEPRECATION)
+@OptIn(OptionArrayInaccessible::class)
 inline fun <T> OptionArray<out T>.copyOf(): OptionArray<T> = OptionArray(inner.copyOf())
 
-@Suppress(Warnings.DEPRECATION)
+@OptIn(OptionArrayInaccessible::class)
 inline fun <T> OptionArray<out T>.copyOf(newSize: Int): OptionArray<T> = OptionArray(inner.copyOf(newSize))
 
-@Suppress(Warnings.DEPRECATION)
+@OptIn(OptionArrayInaccessible::class)
 inline fun <T> OptionArray<out T>.copyOfRange(fromIndex: Int, toIndex: Int): OptionArray<T> =
         OptionArray(inner.copyOfRange(fromIndex, toIndex))
 
@@ -70,8 +73,8 @@ inline fun <T> OptionArray<T>.fill(element: T, fromIndex: Int = 0, toIndex: Int 
     inner.fill(element, fromIndex, toIndex)
 }
 
+@OptIn(OptionArrayInaccessible::class)
 inline fun <A, B> OptionArray<out A>.mapValues(body: (A) -> B): OptionArray<B> {
-    @Suppress(Warnings.DEPRECATION)
     val res = OptionArray<B>(inner.copyOf())
     for (i in 0 until size)
         if(this[i].isNotEmpty()) res.inner[i] = body(this[i].get())
