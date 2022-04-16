@@ -6,6 +6,8 @@ interface Stack<T> {
     val top: T?
     val size: Int
     fun isEmpty(): Boolean
+
+    fun clear()
 }
 
 operator fun <T> Stack<T>.plusAssign(element: T) = push(element)
@@ -34,6 +36,10 @@ class DefaultStack<T>(val list: MutableList<T> = mutableListOf()): Stack<T> {
     }
 
     override fun hashCode(): Int = list.hashCode()
+
+    override fun clear() {
+        list.clear()
+    }
 }
 
 fun <T> stack(): Stack<T> = DefaultStack()

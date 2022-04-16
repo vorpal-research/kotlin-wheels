@@ -17,3 +17,17 @@ fun Random.longs(from: Long, until: Long): Sequence<Long> = generateSequence { n
 fun Random.ints(size: Int, from: Int, until: Int): Sequence<Int> = ints(from, until).take(size)
 fun Random.doubles(size: Int, from: Double, until: Double): Sequence<Double> = doubles(from, until).take(size)
 fun Random.longs(size: Int, from: Long, until: Long): Sequence<Long> = longs(from, until).take(size)
+
+fun <T> Random.nextElementOf(list: List<T>): T {
+    check(list.isNotEmpty())
+    val index = nextInt(until = list.size)
+    return list[index]
+}
+
+fun <T> Random.nextElementOf(list: Array<T>): T {
+    check(list.isNotEmpty())
+    val index = nextInt(until = list.size)
+    return list[index]
+}
+
+inline fun <reified T: Enum<T>> Random.nextEnum(): T = nextElementOf(enumValues())
