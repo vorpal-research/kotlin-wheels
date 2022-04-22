@@ -16,6 +16,8 @@ fun <T> MutableRef<T>.assign(value: T) {
 @JsName("assign")
 infix fun <T> MutableRef<T>.`=`(value: T) = assign(value)
 
+infix fun <T> MutableRef<T>.by(value: T) = assign(value)
+
 fun <T> ref(value: T): MutableRef<T> = SimpleMutableRef(value)
 
 operator fun <T> MutableRef<T>.getValue(thisRef: Any?, prop: KProperty<*>) = value

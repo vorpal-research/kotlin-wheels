@@ -6,31 +6,20 @@ import kotlinx.warnings.Warnings
 
 inline class EitherArray<A, B>
 @PublishedApi
-internal constructor(@PublishedApi internal val inner: Array<Any?>) {
+internal constructor(@PublishedApi internal val inner: Array<Any?>): InlineArray<Either<A, B>, Any?> {
     @PublishedApi
     internal constructor(size: Int) : this(arrayOfNulls(size))
 
-    inline operator fun get(index: Int): Either<A, B> = Either(inner[index])
+    override val realArray: Array<Any?>
+        get() = inner
+
+    override inline operator fun get(index: Int): Either<A, B> = Either(inner[index])
     inline operator fun set(index: Int, value: Either<A, B>) {
         inner[index] = value.unsafeValue
     }
 
-    inline val size: Int get() = inner.size
-
-    // warning: boxed operation
-    inline operator fun iterator(): Iterator<Either<A, B>> =
-            iterator {
-                for (i in 0 until size) yield(get(i))
-            }
-
-    override fun toString(): String {
-        if(size == 0) return "[]"
-        val sb = StringBuilder("[")
-        sb.append(get(0))
-        for(i in 1 until size) sb.append(", ").append(get(i))
-        sb.append("]")
-        return "$sb"
-    }
+    override fun contains(element: Either<A, B>): Boolean = defaultContains(element) { element.unsafeValue }
+    override fun toString(): String = defaultToString { Either(it) }
 }
 
 inline fun <A, B> EitherArray(size: Int, init: (Int) -> Either<A, B>): EitherArray<A, B> {
