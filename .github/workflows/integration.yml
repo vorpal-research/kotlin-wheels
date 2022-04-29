@@ -11,6 +11,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
     - name: Run build with Gradle wrapper
+      id: gradle
       run: ./gradlew build --scan
       continue-on-error: true
     - name: Upload build reports
@@ -18,4 +19,6 @@ jobs:
       with:
         name: build-reports
         path: build/reports/
-
+    - name: Check on failures
+      if: steps.gradle.outcome != 'success'
+      run: exit 1

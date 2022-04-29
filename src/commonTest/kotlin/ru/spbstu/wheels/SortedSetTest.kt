@@ -8,9 +8,14 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class SortedSetTest {
+    private enum class OP { ADD, REMOVE }
+    private enum class PICK { RANDOM, EXISTING }
+
+    private val randomIterations = if (currentPlatform == Platform.JS) 5 else 100
+
     @Test
     fun basic() {
-        100 times { i ->
+        randomIterations times { i ->
             val random = Random(42 * i)
             val st = TreapSet<Int>(comparator_ = null, generator = random)
             val data = random.ints(1000, 0, 10000).toSet()
@@ -54,12 +59,10 @@ class SortedSetTest {
         }
     }
 
-    private enum class OP { ADD, REMOVE }
-    private enum class PICK { RANDOM, EXISTING }
 
     @Test
     fun addRemove() {
-        100 times { i ->
+        randomIterations times { i ->
             val random = Random(100 * i)
             val data = random.ints(1000, 0, 10000).toList()
 
@@ -96,7 +99,7 @@ class SortedSetTest {
 
     @Test
     fun equality() {
-        100 times { i ->
+        randomIterations times { i ->
             val random = Random(100 * i)
             val data = random.ints(1000, 0, 1000).toList()
 
@@ -116,7 +119,7 @@ class SortedSetTest {
 
     @Test
     fun bulkOps() {
-        100 times { i ->
+        randomIterations times { i ->
             val random = Random(100 * i)
             val data = random.ints(1000, 0, 1000).toList()
 
