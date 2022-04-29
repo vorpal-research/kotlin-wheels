@@ -99,9 +99,6 @@ private data class TreapNode<T>(
 }
 
 private data class SplitResult<T>(var left: TreapNode<T>?, var key: T?, var right: TreapNode<T>?)
-private data class DeltaCounter(var delta: Int = 0) {
-    operator fun plusAssign(value: Int) { delta += value }
-}
 
 class TreapSet<T>(val comparator_: Comparator<T>?,
                   val generator: Random): MutableSortedSet<T>, AbstractMutableSet<T>() {
@@ -430,6 +427,8 @@ class TreapSet<T>(val comparator_: Comparator<T>?,
             return true
         } else return super.equals(other)
     }
+
+    override fun hashCode(): Int = super<AbstractMutableSet>.hashCode()
 
     fun copy(): TreapSet<T> {
         val res = TreapSet(comparator_, generator)

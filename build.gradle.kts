@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmCompilation
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toUpperCaseAsciiOnly
+import java.io.ByteArrayOutputStream
 import java.net.URI
 
 buildscript {
@@ -11,6 +11,7 @@ buildscript {
 
 plugins {
     kotlin("multiplatform").version("1.6.20")
+    id("org.jetbrains.kotlinx.benchmark") version "0.4.2"
     `maven-publish`
     `java-library`
     jacoco
@@ -32,6 +33,25 @@ repositories {
     mavenCentral()
 }
 
+val haveChrome by lazy {
+    runCatching {
+        exec {
+            commandLine("chrome", "--version")
+            standardOutput = ByteArrayOutputStream()
+        }.assertNormalExitValue()
+        true
+    }.getOrDefault(false)
+}
+val haveChromium by lazy {
+    runCatching {
+        exec {
+            commandLine("chromium", "--version")
+            standardOutput = ByteArrayOutputStream()
+        }.assertNormalExitValue()
+        true
+    }.getOrDefault(false)
+}
+
 kotlin {
     jvm {
         compilations.all {
@@ -42,9 +62,20 @@ kotlin {
     }
     js {
         nodejs()
-        browser {}
+        browser {
+            testTask {
+                useKarma {
+                    if (haveChrome) useChromeHeadless()
+                    if (haveChromium) useChromiumHeadless()
+                }
+            }
+        }
     }
     //linuxX64()
+
+    targets.all {
+        if (this != metadata {}) compilations.maybeCreate("benchmarks")
+    }
 
     sourceSets {
         all {
@@ -88,12 +119,28 @@ kotlin {
                 api(kotlin("test-js"))
             }
         }
+
 //        val linuxX64Main by getting {
 //            dependsOn(commonMain)
 //        }
 //        val linuxX64Test by getting {
 //            dependsOn(linuxX64Main)
 //        }
+
+        val commonBenchmarks by creating {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.4.2")
+                dependsOn(commonMain)
+            }
+        }
+        val jvmBenchmarks by getting {
+            dependsOn(jvmMain)
+            dependsOn(commonBenchmarks)
+        }
+        val jsBenchmarks by getting {
+            dependsOn(jsMain)
+            dependsOn(commonBenchmarks)
+        }
     }
 }
 
@@ -125,6 +172,22 @@ tasks.jacocoTestReport {
 
 val deployUsername by Props()
 val deployPassword by Props()
+
+benchmark {
+    configurations {
+        val main by getting {
+            mode = "avgt"
+            reportFormat = "scsv"
+            outputTimeUnit = "ns"
+        }
+    }
+
+    targets {
+        kotlin.targets.all {
+            this.compilations.findByName("benchmarks")?.defaultSourceSetName?.let(::register)
+        }
+    }
+}
 
 publishing {
     repositories {
