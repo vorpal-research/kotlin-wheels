@@ -11,7 +11,8 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
     - name: Run build with Gradle wrapper
-      run: ./gradlew build --scan || echo "Ну чёт не так пошло..."
+      run: ./gradlew build --scan
+      continue-on-error: true
     - name: Upload build reports
       uses: actions/upload-artifact@v3
       with:
