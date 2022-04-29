@@ -36,4 +36,14 @@ open class HeapBenchmark {
         }
     }
 
+    @Benchmark
+    fun tryBuiltinHeap(bh: Blackhole) {
+        val heap = BinaryHeap.Inverse<Int>()
+        for (e in data) heap.put(e)
+
+        while(heap.isNotEmpty()) {
+            bh.consume(heap.take())
+        }
+    }
+
 }
