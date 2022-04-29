@@ -38,8 +38,6 @@ class HeapTest {
             val heap = heap(cmp)
             heap += data
 
-            assertEquals(cmp, heap.comparator)
-
             val heapSorted = sequence { while(heap.isNotEmpty()) yield(heap.take()) }.toList()
 
             assertEquals(data.sortedWith(cmp), heapSorted)

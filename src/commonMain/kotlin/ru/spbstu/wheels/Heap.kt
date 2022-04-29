@@ -3,23 +3,23 @@ package ru.spbstu.wheels
 import kotlinx.warnings.Warnings
 
 interface Heap<T>: Queue<T> {
-    val comparator: Comparator<T>
+    fun compare(lhv: T, rhv: T): Int
 }
 
 fun <T> heap(comparator: Comparator<T>): Heap<T> = BinaryHeap(comparator)
-fun <T: Comparable<T>> heap(): Heap<T> = BinaryHeap()
+fun <T: Comparable<T>> heap(): Heap<T> = BinaryHeap.Natural()
 
 fun <T> maxHeap(comparator: Comparator<T>): Heap<T> = BinaryHeap(comparator.reversed())
-fun <T: Comparable<T>> maxHeap(): Heap<T> = BinaryHeap(naturalOrder<T>().reversed())
+fun <T: Comparable<T>> maxHeap(): Heap<T> = BinaryHeap.Inverse()
 
-class BinaryHeap<T>(override val comparator: Comparator<T>): Heap<T>, AbstractMutableCollection<T>() {
+abstract class AbstractBinaryHeap<T>: Heap<T>, AbstractMutableCollection<T>() {
     companion object {
         const val MIN_SIZE = 16
     }
 
     private var data: TArray<T> = TArray(MIN_SIZE)
     private inline val capacity: Int get() = data.size
-    override var size: Int = 0
+    final override var size: Int = 0
         private set
 
     private fun growTo(size: Int) {
@@ -33,9 +33,10 @@ class BinaryHeap<T>(override val comparator: Comparator<T>): Heap<T>, AbstractMu
     private inline val Int.rightIndex get() = (this + 1) * 2
     private inline val Int.parentIndex get() = (this - 1) / 2
 
+    abstract override fun compare(lhv: T, rhv: T): Int
+
     @Suppress(Warnings.UNCHECKED_CAST)
-    private operator fun Any?.compareTo(other: Any?) =
-            comparator.compare(this as T, other as T)
+    private operator fun Any?.compareTo(other: Any?) = compare(this as T, other as T)
 
     override fun add(element: T): Boolean {
         val i = size
@@ -118,4 +119,19 @@ class BinaryHeap<T>(override val comparator: Comparator<T>): Heap<T>, AbstractMu
     override fun isEmpty(): Boolean = size == 0
 }
 
-fun <T: Comparable<T>> BinaryHeap() = BinaryHeap<T>(naturalOrder())
+class BinaryHeap<T> private constructor(val comparator: Comparator<T>): AbstractBinaryHeap<T>() {
+    companion object {
+        operator fun <T> invoke(comparator: Comparator<T>): BinaryHeap<T> = BinaryHeap(comparator)
+        operator fun <T: Comparable<T>> invoke(): BinaryHeap.Natural<T> = Natural()
+    }
+
+    override fun compare(lhv: T, rhv: T): Int = comparator.compare(lhv, rhv)
+
+    class Natural<T: Comparable<T>>: AbstractBinaryHeap<T>() {
+        override fun compare(lhv: T, rhv: T): Int = lhv.compareTo(rhv)
+    }
+
+    class Inverse<T: Comparable<T>>: AbstractBinaryHeap<T>() {
+        override fun compare(lhv: T, rhv: T): Int = -(lhv.compareTo(rhv))
+    }
+}
