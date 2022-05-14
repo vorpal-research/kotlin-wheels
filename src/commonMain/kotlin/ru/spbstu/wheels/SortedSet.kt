@@ -11,7 +11,7 @@ interface SortedSet<E> : Set<E> {
      * or `null` if this set uses the natural ordering
      * of its elements
      */
-    fun comparator(): Comparator<in E>?
+    fun compare(lhv: E, rhv: E): Int
 
     /**
      * Returns the first (lowest) element currently in this set.
@@ -100,11 +100,10 @@ private data class TreapNode<T>(
 
 private data class SplitResult<T>(var left: TreapNode<T>?, var key: T?, var right: TreapNode<T>?)
 
-class TreapSet<T>(val comparator_: Comparator<T>?,
-                  val generator: Random): MutableSortedSet<T>, AbstractMutableSet<T>() {
+abstract class AbstractTreapSet<T>(val generator: Random): MutableSortedSet<T>, AbstractMutableSet<T>() {
 
     private var root: TreapNode<T>? = null
-    override var size: Int = 0
+    final override var size: Int = 0
         private set
 
     private fun TreapNode(key: T, left: TreapNode<T>? = null, right: TreapNode<T>? = null) =
@@ -127,10 +126,8 @@ class TreapSet<T>(val comparator_: Comparator<T>?,
     private fun merge(first: TreapNode<T>?, vararg rest: TreapNode<T>?): TreapNode<T>? =
         rest.fold(first, ::merge)
 
-    private operator fun T.compareTo(that: T): Int = when(comparator_) {
-        null -> uncheckedCast<Comparable<Any?>>(this).compareTo(that)
-        else -> comparator_.compare(this, that)
-    }
+    abstract override fun compare(lhv: T, rhv: T): Int
+    private operator fun T.compareTo(that: T): Int = compare(this, that)
 
     private infix fun T.cmpEquals(that: T): Boolean = compareTo(that) == 0
 
@@ -268,7 +265,6 @@ class TreapSet<T>(val comparator_: Comparator<T>?,
 
     override fun iterator(): MutableIterator<T> = TheIterator()
     override fun clear() { root = null; size = 0 }
-    override fun comparator(): Comparator<in T>? = comparator_
 
     private fun union(left: TreapNode<T>?, right: TreapNode<T>?, delta: MutableRef<Int>): TreapNode<T>? {
         left ?: return right
@@ -283,7 +279,7 @@ class TreapSet<T>(val comparator_: Comparator<T>?,
     }
 
     override fun addAll(elements: Collection<T>): Boolean {
-        if (elements is TreapSet) {
+        if (elements is AbstractTreapSet && canCompare(elements)) {
             val sizeRef = ref(0)
             root = union(root, elements.root, sizeRef)
 
@@ -311,7 +307,7 @@ class TreapSet<T>(val comparator_: Comparator<T>?,
     }
 
     override fun retainAll(elements: Collection<T>): Boolean {
-        if (elements is TreapSet) {
+        if (elements is AbstractTreapSet && canCompare(elements)) {
             val sizeRef = ref(0)
             root = intersect(root, elements.root, sizeRef)
             val oldSize = size
@@ -413,10 +409,12 @@ class TreapSet<T>(val comparator_: Comparator<T>?,
         }
     }
 
+    protected abstract fun canCompare(that: AbstractTreapSet<*>): Boolean
+
     override fun equals(other: Any?): Boolean {
-        if (other is TreapSet<*>) {
+        if (other is AbstractTreapSet<*>) {
             if (size != other.size) return false
-            if (comparator_ != other.comparator_)
+            if (!canCompare(other))
                 return super.equals(other)
             // containsAll() implementation of equals is O(NlogN), while this is O(N)
             val it0 = iterator()
@@ -430,11 +428,22 @@ class TreapSet<T>(val comparator_: Comparator<T>?,
 
     override fun hashCode(): Int = super<AbstractMutableSet>.hashCode()
 
-    fun copy(): TreapSet<T> {
-        val res = TreapSet(comparator_, generator)
-        res.root = root
-        res.size = size
-        return res
+}
+
+class TreapSet<E>(val comparator: Comparator<E>, generator: Random): AbstractTreapSet<E>(generator) {
+    override fun compare(lhv: E, rhv: E): Int = comparator.compare(lhv, rhv)
+
+    override fun canCompare(that: AbstractTreapSet<*>): Boolean =
+        that is TreapSet<*> && comparator == that.comparator
+
+    class Natural<E: Comparable<E>>(generator: Random): AbstractTreapSet<E>(generator) {
+        override fun compare(lhv: E, rhv: E): Int = lhv.compareTo(rhv)
+        override fun canCompare(that: AbstractTreapSet<*>): Boolean = that is Natural<*>
+    }
+
+    class Inverse<E: Comparable<E>>(generator: Random): AbstractTreapSet<E>(generator) {
+        override fun compare(lhv: E, rhv: E): Int = -lhv.compareTo(rhv)
+        override fun canCompare(that: AbstractTreapSet<*>): Boolean = that is Inverse<*>
     }
 }
 
@@ -445,7 +454,7 @@ fun <T> mutableSortedSetOf(vararg elements: T, comparator: Comparator<T>): Mutab
 }
 
 fun <T: Comparable<T>> mutableSortedSetOf(vararg elements: T): MutableSortedSet<T> {
-    val treap = TreapSet<T>(null, Random.Default)
+    val treap = TreapSet.Natural<T>(Random.Default)
     for (e in elements) treap.add(e)
     return treap
 }
@@ -457,7 +466,7 @@ fun <T: Comparable<T>> sortedSetOf(vararg elements: T): SortedSet<T> =
     mutableSortedSetOf(*elements)
 
 fun <T: Comparable<T>> Iterable<T>.toMutableSortedSet(): MutableSortedSet<T> {
-    val treap = TreapSet<T>(null, Random.Default)
+    val treap = TreapSet.Natural<T>(Random.Default)
     for (e in this) treap.add(e)
     return treap
 }
@@ -474,7 +483,7 @@ fun <T> Iterable<T>.toSortedSetWith(comparator: Comparator<T>): SortedSet<T> =
     toMutableSortedSetWith(comparator)
 
 fun <T: Comparable<T>> Sequence<T>.toMutableSortedSet(): MutableSortedSet<T> {
-    val treap = TreapSet<T>(null, Random.Default)
+    val treap = TreapSet.Natural<T>(Random.Default)
     for (e in this) treap.add(e)
     return treap
 }

@@ -17,7 +17,7 @@ class SortedSetTest {
     fun basic() {
         randomIterations times { i ->
             val random = Random(42 * i)
-            val st = TreapSet<Int>(comparator_ = null, generator = random)
+            val st = TreapSet.Natural<Int>(generator = random)
             val data = random.ints(1000, 0, 10000).toSet()
             st.addAll(data)
 
@@ -66,7 +66,7 @@ class SortedSetTest {
             val random = Random(100 * i)
             val data = random.ints(1000, 0, 10000).toList()
 
-            val ts = TreapSet<Int>(comparator_ = null, generator = random)
+            val ts = TreapSet.Natural<Int>(generator = random)
             ts.addAll(data)
 
             val setData = data.toMutableSet()
@@ -103,8 +103,8 @@ class SortedSetTest {
             val random = Random(100 * i)
             val data = random.ints(1000, 0, 1000).toList()
 
-            val ts = TreapSet<Int>(null, random)
-            val ts2 = TreapSet<Int>(null, random)
+            val ts = TreapSet.Natural<Int>(random)
+            val ts2 = TreapSet.Natural<Int>(random)
             assertEquals(setOf(), ts)
             assertEquals(ts, ts2)
             ts.addAll(data)
@@ -123,7 +123,7 @@ class SortedSetTest {
             val random = Random(100 * i)
             val data = random.ints(1000, 0, 1000).toList()
 
-            val ts = TreapSet<Int>(null, random)
+            val ts = TreapSet.Natural<Int>(random)
             ts.addAll(data)
             val setData = data.toMutableSet()
 
@@ -133,7 +133,7 @@ class SortedSetTest {
             run {
                 val data1 = random.ints(1000, 0, 1000).toList()
 
-                val ts1 = TreapSet<Int>(null, random)
+                val ts1 = TreapSet.Natural<Int>(random)
                 ts1.addAll(data1)
                 val setData1 = data1.toSet()
 

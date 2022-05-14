@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin.Companion.METADATA_TARGET_NAME
+import org.jetbrains.kotlin.gradle.targets.js.testing.karma.KotlinKarma
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toUpperCaseAsciiOnly
 import java.io.ByteArrayOutputStream
 import java.net.URI
@@ -33,25 +35,6 @@ repositories {
     mavenCentral()
 }
 
-val haveChrome by lazy {
-    runCatching {
-        exec {
-            commandLine("chrome", "--version")
-            standardOutput = ByteArrayOutputStream()
-        }.assertNormalExitValue()
-        true
-    }.getOrDefault(false)
-}
-val haveChromium by lazy {
-    runCatching {
-        exec {
-            commandLine("chromium", "--version")
-            standardOutput = ByteArrayOutputStream()
-        }.assertNormalExitValue()
-        true
-    }.getOrDefault(false)
-}
-
 kotlin {
     jvm {
         compilations.all {
@@ -65,8 +48,7 @@ kotlin {
         browser {
             testTask {
                 useKarma {
-                    if (haveChrome) useChromeHeadless()
-                    if (haveChromium) useChromiumHeadless()
+                    useChromeHeadless()
                 }
             }
         }
@@ -74,7 +56,7 @@ kotlin {
     //linuxX64()
 
     targets.all {
-        if (this != metadata {}) compilations.maybeCreate("benchmarks")
+        if (name != METADATA_TARGET_NAME) compilations.maybeCreate("benchmarks")
     }
 
     sourceSets {
