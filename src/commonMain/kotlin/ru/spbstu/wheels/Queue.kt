@@ -8,6 +8,7 @@ interface Queue<T> {
     val current: T?
     val size: Int
     fun isEmpty(): Boolean = size == 0
+    fun clear()
 }
 
 operator fun <T> Queue<T>.plusAssign(element: T) = put(element)
@@ -25,6 +26,7 @@ interface Deque<T> {
     val last: T?
     val size: Int
     fun isEmpty(): Boolean = size == 0
+    fun clear()
 }
 
 fun <T> Deque<T>.isNotEmpty() = !isEmpty()
@@ -109,6 +111,56 @@ class ArrayDeque<T>: Deque<T>, Queue<T> {
 
     override val current: T?
         get() = last
+
+    override fun clear() {
+        data = TArray(INITIAL_CAPACITY)
+        firstPtr = 0
+        lastPtr = 0
+    }
+
+    private inline fun forEachWithIndex(body: (Int, T) -> Unit) {
+        var ix = 0
+        forEach { body(ix++, it) }
+    }
+
+    private inner class TheIterator: Iterator<T> {
+        private var dataIndex = firstPtr
+        override fun hasNext(): Boolean = dataIndex <= lastPtr && dataIndex < capacity
+
+        override fun next(): T {
+            val result = checkNotNull(data[dataIndex])
+            ++dataIndex
+            if (dataIndex >= capacity && lastPtr < firstPtr) dataIndex = 0
+            return result
+        }
+    }
+
+    operator fun iterator(): Iterator<T> = TheIterator()
+
+    private inline fun forEach(body: (T) -> Unit) {
+        var dataIndex = firstPtr
+        while (dataIndex <= lastPtr && dataIndex < capacity) {
+            body(data[dataIndex]!!)
+            ++dataIndex
+        }
+        if (lastPtr < firstPtr) {
+            while (dataIndex <= lastPtr && dataIndex < capacity) {
+                body(data[dataIndex]!!)
+                ++dataIndex
+            }
+        }
+    }
+
+    private fun StringBuilder.appendElements() = apply {
+        this@ArrayDeque.forEachWithIndex { i, e ->
+            if (i != 0) append(", ")
+            append(e.toString())
+        }
+    }
+
+    override fun toString() = buildString {
+        append("{").appendElements().append("}")
+    }
 }
 
 fun <T> queue(): Queue<T> = ArrayDeque()

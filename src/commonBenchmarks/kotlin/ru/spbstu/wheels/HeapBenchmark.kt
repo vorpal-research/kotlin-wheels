@@ -8,7 +8,7 @@ open class HeapBenchmark {
     lateinit var random: Random
     lateinit var data: List<Int>
 
-    @Setup
+    @Setup()
     fun setup() {
         random = Random(32)
         data = random.ints(3000).toList()
@@ -27,7 +27,7 @@ open class HeapBenchmark {
     @Benchmark
     fun tryInlinedHeap(bh: Blackhole) {
         val heap = object : AbstractBinaryHeap<Int>() {
-            override fun compare(lhv: Int, rhv: Int): Int = -lhv.compareTo(rhv)
+            override fun compare(lhv: Int, rhv: Int): Int = -(lhv.compareTo(rhv))
         }
         for (e in data) heap.put(e)
 
