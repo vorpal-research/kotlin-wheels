@@ -58,14 +58,52 @@ inline fun <T> IndexedListIterator(startIndex: Int, endIndex: Int, crossinline b
 inline fun <T> IndexedListIterator(endIndex: Int, crossinline body: (index: Int) -> T) =
     IndexedListIterator(0, endIndex, body)
 
-fun <T> iteratorIndexOf(iterator: Iterator<T>, value: T): Int {
+abstract class IndexedMutableListIterator<T>(startIndex: Int, endIndex: Int):
+        IndexedListIterator<T>(startIndex, endIndex), MutableListIterator<T> {
+    constructor(endIndex: Int): this(0, endIndex)
+
+    private var lastIndex: Int = -1
+
+    override fun next(): T {
+        lastIndex = index
+        return super.next()
+    }
+
+    override fun previous(): T {
+        lastIndex = index - 1
+        return super.previous()
+    }
+
+    override fun add(element: T) {
+        add(index, element)
+        ++index
+    }
+
+    override fun remove() {
+        if (lastIndex == -1) throw NoSuchElementException()
+        removeAt(lastIndex)
+    }
+
+    override fun set(element: T) {
+        if (lastIndex == -1) throw NoSuchElementException()
+        set(lastIndex, element)
+    }
+
+    abstract fun add(index: Int, element: T)
+    abstract fun removeAt(index: Int)
+    abstract operator fun set(index: Int, element: T)
+}
+
+inline fun <T> iteratorIndexOf(iterator: Iterator<T>, predicate: (T) -> Boolean): Int {
     var ix = 0
     for (e in iterator) {
-        if (e == value) return ix
+        if (predicate(e)) return ix
         ++ix
     }
     return -1
 }
+
+fun <T> iteratorIndexOf(iterator: Iterator<T>, value: T): Int = iteratorIndexOf(iterator) { it == value }
 
 fun <T> iteratorContains(iterator: Iterator<T>, value: T): Boolean =
     iteratorIndexOf(iterator, value) != -1
@@ -79,6 +117,19 @@ fun <T> iteratorEquals(lhv: Iterator<T>, rhv: Iterator<T>): Boolean {
 
         if (lhv.next() != rhv.next()) return false
     }
+}
+
+inline fun <A, B> mappingIterator(base: Iterator<A>,
+                                  crossinline body: (A) -> B): Iterator<B> = object : Iterator<B> {
+    override fun hasNext(): Boolean = base.hasNext()
+    override fun next(): B = body(base.next())
+}
+
+inline fun <A, B> mappingIterator(base: MutableIterator<A>,
+                                  crossinline body: (A) -> B): MutableIterator<B> = object : MutableIterator<B> {
+    override fun hasNext(): Boolean = base.hasNext()
+    override fun next(): B = body(base.next())
+    override fun remove() = base.remove()
 }
 
 

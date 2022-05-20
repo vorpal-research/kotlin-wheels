@@ -3,7 +3,7 @@ package ru.spbstu.wheels
 import kotlinx.warnings.Warnings
 import kotlin.jvm.JvmName
 
-data class SimpleEntry<out K, out V>(override val key: K, override val value: V) : Map.Entry<K, V> {
+open class SimpleEntry<out K, out V>(override val key: K, override val value: V) : Map.Entry<K, V> {
 
     override fun equals(other: Any?): Boolean =
             other is Map.Entry<*, *> && key == other.key && value == other.value
@@ -11,6 +11,16 @@ data class SimpleEntry<out K, out V>(override val key: K, override val value: V)
     override fun hashCode(): Int = key.hashCode() xor value.hashCode()
 
     override fun toString(): String = "$key=$value"
+}
+
+abstract class SimpleMutableEntry<K, V>(key: K, value: V): SimpleEntry<K, V>(key, value), MutableMap.MutableEntry<K, V> {
+    abstract override fun setValue(newValue: V): V
+}
+
+inline fun <K, V> SimpleMutableEntry(key: K,
+                                     value: V,
+                                     crossinline setter: (V) -> V) = object : SimpleMutableEntry<K, V>(key, value) {
+    override fun setValue(newValue: V): V = setter(newValue)
 }
 
 @Suppress(Warnings.UNCHECKED_CAST)
