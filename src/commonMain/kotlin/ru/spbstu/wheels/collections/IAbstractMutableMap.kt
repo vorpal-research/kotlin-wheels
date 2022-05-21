@@ -129,4 +129,11 @@ interface IAbstractMutableMap<K, V>: MutableMap<K, V>, IAbstractMap<K, V> {
                 }
             }
     }
+
+    abstract class Impl<K, V> : IAbstractMutableMap<K, V> {
+        override fun equals(other: Any?): Boolean = mapEquals(other)
+        override fun hashCode(): Int = mapHashcode()
+        override fun toString(): String = mapToString()
+    }
+
 }

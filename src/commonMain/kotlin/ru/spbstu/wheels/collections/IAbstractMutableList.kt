@@ -90,4 +90,11 @@ interface IAbstractMutableList<T>: IAbstractList<T>, MutableList<T>, IAbstractMu
     override fun equals(other: Any?): Boolean
     override fun hashCode(): Int
     override fun toString(): String
+
+    abstract class Impl<T> : IAbstractMutableList<T> {
+        override fun equals(other: Any?): Boolean = listEquals(other)
+        override fun hashCode(): Int = listHashCode()
+        override fun toString(): String = listToString()
+    }
+
 }

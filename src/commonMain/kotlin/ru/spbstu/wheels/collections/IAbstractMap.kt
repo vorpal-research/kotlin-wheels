@@ -95,6 +95,16 @@ interface IAbstractMap<K, out V> : Map<K, V> {
         override fun keyIterator(): Iterator<K>
         override fun entryIterator(): Iterator<Map.Entry<K, V>> =
             mappingIterator(keyIterator()) { SimpleEntry(it, get(it)!!) }
+
+        override fun equals(other: Any?): Boolean
+        override fun hashCode(): Int
+        override fun toString(): String
+    }
+
+    abstract class Impl<K, out V> : IAbstractMap<K, V> {
+        override fun equals(other: Any?): Boolean = mapEquals(other)
+        override fun hashCode(): Int = mapHashcode()
+        override fun toString(): String = mapToString()
     }
 
 }

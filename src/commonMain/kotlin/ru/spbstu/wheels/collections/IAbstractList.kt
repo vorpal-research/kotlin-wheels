@@ -57,7 +57,7 @@ class SimpleSubList<T>(val list: List<T>, val fromIndex: Int, val toIndex: Int):
     override fun toString(): String = listToString()
 }
 
-interface IAbstractList<T>: IAbstractCollection<T>, List<T> {
+interface IAbstractList<out T>: IAbstractCollection<T>, List<T> {
     private inline fun forEachIndexed(body: (index: Int, t: T) -> Unit) {
         for (i in 0 until size) body(i, get(i))
     }
@@ -66,14 +66,14 @@ interface IAbstractList<T>: IAbstractCollection<T>, List<T> {
         for (i in lastIndex downTo 0) body(i, get(i))
     }
 
-    override fun indexOf(element: T): Int {
+    override fun indexOf(element: @UnsafeVariance T): Int {
         forEachIndexed { index, t ->
             if (element == t) return index
         }
         return -1
     }
 
-    override fun lastIndexOf(element: T): Int {
+    override fun lastIndexOf(element: @UnsafeVariance  T): Int {
         forEachIndexedReversed { index, t ->
             if (element == t) return index
         }
@@ -88,9 +88,9 @@ interface IAbstractList<T>: IAbstractCollection<T>, List<T> {
 
     override fun subList(fromIndex: Int, toIndex: Int): List<T> = SimpleSubList(this, fromIndex, toIndex)
 
-    override fun contains(element: T): Boolean = indexOf(element) != -1
+    override fun contains(element: @UnsafeVariance T): Boolean = indexOf(element) != -1
 
-    override fun containsAll(elements: Collection<T>): Boolean =
+    override fun containsAll(elements: Collection<@UnsafeVariance T>): Boolean =
         super.containsAll(elements)
 
     override fun isEmpty(): Boolean =
@@ -127,6 +127,11 @@ interface IAbstractList<T>: IAbstractCollection<T>, List<T> {
         return sb.toString()
     }
 
+    abstract class Impl<out T>: IAbstractList<T> {
+        override fun equals(other: Any?): Boolean = listEquals(other)
+        override fun hashCode(): Int = listHashCode()
+        override fun toString(): String = listToString()
+    }
 }
 
 

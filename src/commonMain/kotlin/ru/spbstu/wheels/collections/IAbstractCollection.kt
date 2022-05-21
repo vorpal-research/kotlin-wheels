@@ -25,4 +25,10 @@ interface IAbstractCollection<out T>: Collection<T> {
         sb.append(suffix)
         return sb.toString()
     }
+
+    abstract class Impl<out T> : IAbstractCollection<T> {
+        override fun hashCode(): Int = collectionHashCode()
+        override fun toString(): String = collectionToString()
+    }
+
 }

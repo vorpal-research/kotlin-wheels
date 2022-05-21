@@ -21,4 +21,11 @@ interface IAbstractSet<out T>: IAbstractCollection<T>, Set<T> {
     fun <T> IAbstractSet<T>.setHashCode(): Int = ru.spbstu.wheels.setHashCode(this)
 
     fun <T> IAbstractSet<T>.setToString(): String = collectionToString("{", "}")
+
+    abstract class Impl<out T>: IAbstractSet<T> {
+        override fun equals(other: Any?): Boolean = setEquals(other)
+        override fun hashCode(): Int = setHashCode()
+        override fun toString(): String = setToString()
+    }
+
 }

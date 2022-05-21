@@ -17,4 +17,10 @@ interface IAbstractMutableCollection<T>: MutableCollection<T>, IAbstractCollecti
     override fun equals(other: Any?): Boolean
     override fun hashCode(): Int
     override fun toString(): String
+
+    abstract class Impl<T> : IAbstractMutableCollection<T> {
+        override fun hashCode(): Int = collectionHashCode()
+        override fun toString(): String = collectionToString()
+    }
+
 }

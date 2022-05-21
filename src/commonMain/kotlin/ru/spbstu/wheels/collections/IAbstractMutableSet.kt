@@ -9,4 +9,10 @@ interface IAbstractMutableSet<T>: IAbstractSet<T>, MutableSet<T>, IAbstractMutab
     override fun equals(other: Any?): Boolean
     override fun hashCode(): Int
     override fun toString(): String
+
+    abstract class Impl<T> : IAbstractMutableSet<T> {
+        override fun equals(other: Any?): Boolean = setEquals(other)
+        override fun hashCode(): Int = setHashCode()
+        override fun toString(): String = setToString()
+    }
 }
