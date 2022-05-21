@@ -1,5 +1,7 @@
 package ru.spbstu.wheels.collections
 
+import kotlin.jvm.JvmName
+
 fun interface InfiniteIterator<T>: Iterator<T> {
     override fun hasNext(): Boolean = true
     override fun next(): T
@@ -125,6 +127,7 @@ inline fun <A, B> mappingIterator(base: Iterator<A>,
     override fun next(): B = body(base.next())
 }
 
+@JvmName("mappingMutableIterator")
 inline fun <A, B> mappingIterator(base: MutableIterator<A>,
                                   crossinline body: (A) -> B): MutableIterator<B> = object : MutableIterator<B> {
     override fun hasNext(): Boolean = base.hasNext()

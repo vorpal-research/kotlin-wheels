@@ -82,7 +82,7 @@ interface IAbstractList<T>: IAbstractCollection<T>, List<T> {
 
     override fun listIterator(): ListIterator<T> = listIterator(0)
     override fun listIterator(index: Int): ListIterator<T> =
-        IndexedListIterator(0, size) { get(it) }
+        IndexedListIterator(index, size) { get(it) }
 
     override fun iterator(): Iterator<T> = listIterator()
 
