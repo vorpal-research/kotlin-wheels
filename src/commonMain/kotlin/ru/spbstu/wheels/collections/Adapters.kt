@@ -34,3 +34,11 @@ class StringBuilderAsList(val sb: StringBuilder): IAbstractMutableList.Impl<Char
 
 fun StringBuilder.asList(): MutableList<Char> = StringBuilderAsList(this)
 
+class ListAsCharSequence(val list: List<Char>): ICharSequence.Impl() {
+    override val length: Int
+        get() = list.size
+
+    override fun get(index: Int): Char = list[index]
+}
+
+fun List<Char>.asCharSequence(): CharSequence = ListAsCharSequence(this)

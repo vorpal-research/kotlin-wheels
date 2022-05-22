@@ -16,7 +16,7 @@ class AbstractMutableKeys<K, V>(val map: IAbstractMutableMap<K, V>): IAbstractMu
 
     override fun contains(element: K): Boolean = map.containsKey(element)
 
-    override fun add(element: K): Boolean = throw IllegalStateException("Not supported")
+    override fun add(element: K): Boolean = throw UnsupportedOperationException("add")
 
     override fun remove(element: K): Boolean {
         val size = map.size
@@ -38,7 +38,7 @@ class AbstractMutableValues<K, V>(val map: IAbstractMutableMap<K, V>): IAbstract
 
     override fun iterator(): MutableIterator<V> = map.valueIterator()
 
-    override fun add(element: V): Boolean = throw IllegalStateException("Not supported")
+    override fun add(element: V): Boolean = throw UnsupportedOperationException("add")
 
     override fun remove(element: V): Boolean {
         val size = map.size
@@ -128,6 +128,12 @@ interface IAbstractMutableMap<K, V>: MutableMap<K, V>, IAbstractMap<K, V> {
                     newValue -> put(key, newValue)!!
                 }
             }
+
+        abstract class Impl<K, V> : ByKeys<K, V> {
+            override fun equals(other: Any?): Boolean = mapEquals(other)
+            override fun hashCode(): Int = mapHashcode()
+            override fun toString(): String = mapToString()
+        }
     }
 
     abstract class Impl<K, V> : IAbstractMutableMap<K, V> {

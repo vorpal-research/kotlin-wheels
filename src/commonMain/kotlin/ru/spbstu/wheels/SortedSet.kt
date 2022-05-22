@@ -84,6 +84,12 @@ interface SortedSet<E> : Set<E> {
      * and this set does not permit null elements
      */
     fun higher(e: E): E?
+
+    /**
+     * Returns an iterator that goes backwards, from the last element of this set to the first one
+     *
+     * */
+    fun descendingIterator(): Iterator<E>
 }
 
 interface MutableSortedSet<T>: SortedSet<T>, MutableSet<T>
@@ -264,6 +270,7 @@ abstract class AbstractTreapSet<T>(val generator: Random): MutableSortedSet<T>, 
     }
 
     override fun iterator(): MutableIterator<T> = TheIterator()
+    override fun descendingIterator(): Iterator<T> = throw NotImplementedError()
     override fun clear() { root = null; size = 0 }
 
     private fun union(left: TreapNode<T>?, right: TreapNode<T>?, delta: MutableRef<Int>): TreapNode<T>? {
