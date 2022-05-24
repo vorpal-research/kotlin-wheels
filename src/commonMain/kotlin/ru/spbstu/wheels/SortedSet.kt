@@ -202,9 +202,14 @@ abstract class AbstractTreapSet<T>(val generator: Random): MutableSortedSet<T>, 
         return true
     }
 
-    inner class TheIterator: MutableIterator<T> {
-        private var backStack: Stack<TreapNode<T>> = stack()
+    private abstract inner class TheIterator: MutableIterator<T> {
+        protected var backStack: Stack<TreapNode<T>> = stack()
         private var lastReturned: T? = null
+
+        abstract fun TreapNode<T>.fwd(): TreapNode<T>?
+        abstract fun pushLeft(node: TreapNode<T>)
+        abstract fun pushRight(node: TreapNode<T>)
+        abstract fun goToFirst()
 
         private fun reset() {
             backStack.clear()
@@ -214,7 +219,7 @@ abstract class AbstractTreapSet<T>(val generator: Random): MutableSortedSet<T>, 
             }
         }
 
-        private fun goAllTheWayLeft() {
+        protected fun goAllTheWayLeft() {
             while (true) {
                 when (val left = backStack.top?.left) {
                     null -> break
@@ -225,7 +230,7 @@ abstract class AbstractTreapSet<T>(val generator: Random): MutableSortedSet<T>, 
 
         init {
             reset()
-            goAllTheWayLeft()
+            goToFirst()
         }
 
         override fun hasNext(): Boolean = !backStack.isEmpty()
@@ -234,10 +239,14 @@ abstract class AbstractTreapSet<T>(val generator: Random): MutableSortedSet<T>, 
             if (backStack.isEmpty()) throw NoSuchElementException("Iterator.next")
             val current = backStack.pop()
 
-            if (current.right != null) {
-                backStack.push(current.right)
-                goAllTheWayLeft()
+            when (val fwd = current.fwd()) {
+                null -> {}
+                else -> {
+                    backStack.push(fwd)
+                    goToFirst()
+                }
             }
+
             return current.key.also { lastReturned = it }
         }
 
@@ -248,12 +257,11 @@ abstract class AbstractTreapSet<T>(val generator: Random): MutableSortedSet<T>, 
                     key cmpEquals current.key -> break
                     key < current.key -> {
                         checkNotNull(current.left)
-                        backStack.push(current.left)
+                        pushLeft(current.left)
                     }
                     else /* key > current.key */ -> {
                         checkNotNull(current.right)
-                        backStack.pop()
-                        backStack.push(current.right)
+                        pushRight(current.right)
                     }
                 }
             }
@@ -268,9 +276,50 @@ abstract class AbstractTreapSet<T>(val generator: Random): MutableSortedSet<T>, 
             }
         }
     }
+    private inner class FwdIterator: TheIterator() {
+        override fun TreapNode<T>.fwd(): TreapNode<T>? = right
 
-    override fun iterator(): MutableIterator<T> = TheIterator()
-    override fun descendingIterator(): Iterator<T> = throw NotImplementedError()
+        override fun pushLeft(node: TreapNode<T>) {
+            backStack.push(node)
+        }
+
+        override fun pushRight(node: TreapNode<T>) {
+            backStack.pop()
+            backStack.push(node)
+        }
+
+        override fun goToFirst() {
+            while (true) {
+                when (val left = backStack.top?.left) {
+                    null -> break
+                    else -> backStack.push(left)
+                }
+            }
+        }
+    }
+
+    private inner class BwdIterator: TheIterator() {
+        override fun TreapNode<T>.fwd(): TreapNode<T>? = right
+        override fun pushLeft(node: TreapNode<T>) {
+            backStack.pop()
+            backStack.push(node)
+        }
+        override fun pushRight(node: TreapNode<T>) {
+            backStack.push(node)
+        }
+
+        override fun goToFirst() {
+            while (true) {
+                when (val right = backStack.top?.right) {
+                    null -> break
+                    else -> backStack.push(right)
+                }
+            }
+        }
+    }
+
+    override fun iterator(): MutableIterator<T> = FwdIterator()
+    override fun descendingIterator(): Iterator<T> = BwdIterator()
     override fun clear() { root = null; size = 0 }
 
     private fun union(left: TreapNode<T>?, right: TreapNode<T>?, delta: MutableRef<Int>): TreapNode<T>? {

@@ -1,31 +1,41 @@
 package ru.spbstu.wheels.collections
 
-class MutableSubList<T>(val list: MutableList<T>, val fromIndex: Int, val toIndex: Int): IAbstractMutableList<T> {
+class MutableSubList<T>(val list: MutableList<T>, val fromIndex: Int, var toIndex: Int): IAbstractMutableList<T> {
     init {
         checkBounds(fromIndex in list.indices)
         checkBounds(toIndex in 0 .. list.size)
         checkBounds(toIndex >= fromIndex)
     }
 
-    private fun checkBaseIndex(index: Int) {
+    override fun clear() {
+        for (i in (toIndex - 1) downTo fromIndex) {
+            list.removeAt(i)
+        }
+        toIndex = fromIndex
+    }
+
+    private fun checkBaseIndex(index: Int, includeEnd: Boolean = false) {
         checkBounds(index >= fromIndex)
-        checkBounds(index < toIndex)
+        if (!includeEnd) checkBounds(index < toIndex)
+        else checkBounds(index <= toIndex)
     }
 
     override val size: Int
         get() = toIndex - fromIndex
 
-    private fun adjustIndex(index: Int): Int {
+    private fun adjustIndex(index: Int, includeEnd: Boolean = false): Int {
         val adjustedIndex = fromIndex + index
-        checkBaseIndex(adjustedIndex)
+        checkBaseIndex(adjustedIndex, includeEnd)
         return adjustedIndex
     }
 
     override fun get(index: Int): T = list.get(adjustIndex(index))
 
-    override fun add(index: Int, element: T) = list.add(adjustIndex(index), element)
+    override fun add(index: Int, element: T) =
+        list.add(adjustIndex(index, includeEnd = true), element).also { ++toIndex }
 
-    override fun removeAt(index: Int): T = list.removeAt(adjustIndex(index))
+    override fun removeAt(index: Int): T =
+        list.removeAt(adjustIndex(index)).also { --toIndex }
 
     override fun set(index: Int, element: T): T = list.set(adjustIndex(index), element)
 
@@ -45,7 +55,7 @@ class MutableSubList<T>(val list: MutableList<T>, val fromIndex: Int, val toInde
 
 interface IAbstractMutableList<T>: IAbstractList<T>, MutableList<T>, IAbstractMutableCollection<T> {
     override fun add(element: T): Boolean {
-        add(0, element)
+        add(size, element)
         return true
     }
 
@@ -83,7 +93,11 @@ interface IAbstractMutableList<T>: IAbstractList<T>, MutableList<T>, IAbstractMu
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> =
         MutableSubList(this, fromIndex, toIndex)
 
-    override fun clear() = super.clear()
+    override fun clear() {
+        for (i in lastIndex downTo 0) {
+            removeAt(i)
+        }
+    }
     override fun removeAll(elements: Collection<T>): Boolean = super.removeAll(elements)
     override fun retainAll(elements: Collection<T>): Boolean = super.retainAll(elements)
 

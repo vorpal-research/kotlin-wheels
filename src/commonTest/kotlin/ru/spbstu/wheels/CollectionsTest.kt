@@ -122,4 +122,21 @@ class CollectionsTest {
         lst.resize(12) { it }
         assertEquals(List(12) { it }, lst)
     }
+
+    operator fun <T> MutableList<T>.get(range: IntRange) = subList(range.start, range.endInclusive + 1)
+    operator fun <T> MutableList<T>.get(range: IntInfiniteRangeAfter) = subList(range.from, size)
+    operator fun <T> MutableList<T>.set(range: IntRange, collection: Collection<T>) =
+        subList(range.start, range.endInclusive + 1).assign(collection)
+    operator fun <T> MutableList<T>.get(range: IntInfiniteRangeAfter, collection: Collection<T>) =
+        subList(range.from, size).assign(collection)
+
+    @Test
+    fun slices() {
+        val lst = (1..220).toMutableList()
+        lst[14..45] = listOf(1,2,3)
+        lst[70..Inf].clear()
+        assertEquals((1..14) + (1..3) + (47..99), lst)
+        lst[69..69] = listOf(99, 100, 101)
+        assertEquals((1..14) + (1..3) + (47..101), lst)
+    }
 }

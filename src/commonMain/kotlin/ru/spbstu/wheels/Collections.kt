@@ -90,6 +90,23 @@ inline fun <T> MutableList<T>.resize(newSize: Int, fill: (Int) -> T) = when {
     }
 }
 
+fun <T> MutableList<T>.assign(other: Collection<T>) {
+    if (other.isEmpty()) return clear()
+
+    while (other.size < size) removeLast()
+
+    /* now size <= other.size */
+
+    val iter = other.iterator()
+    var i = 0
+    while (i < size) {
+        this[i] = iter.next()
+        ++i
+    }
+    if (this is ArrayList<*>) ensureCapacity(other.size)
+    while (other.size > size) add(iter.next())
+}
+
 infix fun <T> List<T>.identityEquals(that: List<T>): Boolean {
     if(size != that.size) return false
     for(i in 0..lastIndex) {
