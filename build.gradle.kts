@@ -1,8 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin.Companion.METADATA_TARGET_NAME
-import org.jetbrains.kotlin.gradle.targets.js.testing.karma.KotlinKarma
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toUpperCaseAsciiOnly
-import java.io.ByteArrayOutputStream
 import java.net.URI
 
 buildscript {
@@ -12,7 +10,7 @@ buildscript {
 }
 
 plugins {
-    kotlin("multiplatform").version("1.6.20")
+    kotlin("multiplatform").version("1.6.21")
     id("org.jetbrains.kotlinx.benchmark") version "0.4.2"
     `maven-publish`
     `java-library`
@@ -43,17 +41,17 @@ kotlin {
             }
         }
     }
-    js {
+    js(IR) {
         nodejs()
         browser {
             testTask {
                 useKarma {
-                    useChromeHeadless()
+                    useChromiumHeadless()
                 }
             }
         }
     }
-    //linuxX64()
+    linuxX64()
 
     targets.all {
         if (name != METADATA_TARGET_NAME) compilations.maybeCreate("benchmarks")
@@ -102,12 +100,12 @@ kotlin {
             }
         }
 
-//        val linuxX64Main by getting {
-//            dependsOn(commonMain)
-//        }
-//        val linuxX64Test by getting {
-//            dependsOn(linuxX64Main)
-//        }
+        val linuxX64Main by getting {
+            dependsOn(commonMain)
+        }
+        val linuxX64Test by getting {
+            dependsOn(linuxX64Main)
+        }
 
         val commonBenchmarks by creating {
             dependencies {
@@ -161,6 +159,9 @@ benchmark {
             mode = "avgt"
             reportFormat = "scsv"
             outputTimeUnit = "ns"
+            iterationTime = 1
+            iterations = 10
+            warmups = 8
         }
     }
 
@@ -179,6 +180,7 @@ publishing {
                 username = deployUsername
                 password = deployPassword
             }
+
         }
     }
 }

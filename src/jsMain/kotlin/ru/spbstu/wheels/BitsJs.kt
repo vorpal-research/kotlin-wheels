@@ -1,6 +1,7 @@
 package ru.spbstu.wheels
 
-private val reverseJs = js("""
+private object PrivateBits {
+    val reverseJs = js("""
     function(bits) {
         var x = new Uint32Array(1); x[0]=bits;
         x[0] = ((x[0] & 0x0000ffff) << 16) | ((x[0] & 0xffff0000) >>> 16);
@@ -11,6 +12,7 @@ private val reverseJs = js("""
         return x[0];
     }
     """)
+}
 
 @PublishedApi
-internal actual fun Int.reverseBits(): Int = reverseJs(this) as Int
+internal actual fun Int.reverseBits(): Int = PrivateBits.reverseJs(this) as Int
